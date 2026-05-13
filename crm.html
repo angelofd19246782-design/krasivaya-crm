@@ -138,234 +138,119 @@
     <!-- Content -->
     <div class="content">
 
-      <!-- ─── Dashboard view ─── -->
+      <!-- ─── Mission Control — cinematic ops console ─── -->
       <div class="view-section" id="viewDashboard">
 
-        <!-- Hero banner — PULSAR Mission Control -->
-        <div class="dash-hero" id="dashHero">
-          <div class="hero-orbs" aria-hidden="true">
-            <span class="hero-orb orb-1"></span>
-            <span class="hero-orb orb-2"></span>
-            <span class="hero-orb orb-3"></span>
+        <!-- ════════ OPS HERO — Radar + Mission panel ════════ -->
+        <section class="ops-hero">
+          <div class="ops-radar-panel">
+            <div class="radar-coords">
+              <span>LAT 47.21°N</span>
+              <span class="sep">·</span>
+              <span>BEARING <span id="opsBearing">047</span></span>
+              <span class="sep">·</span>
+              <span class="live-pulse" data-en="LIVE" data-ru="ОНЛАЙН" data-ko="라이브">LIVE</span>
+            </div>
+
+            <div class="radar" id="opsRadar">
+              <div class="radar-ring r4"></div>
+              <div class="radar-ring r3"></div>
+              <div class="radar-ring r2"></div>
+              <div class="radar-ring r1"></div>
+              <div class="radar-crosshair-h"></div>
+              <div class="radar-crosshair-v"></div>
+              <div class="radar-sweep"></div>
+              <div class="radar-center">
+                <div class="radar-center-val" id="radarCenterVal">—</div>
+                <div class="radar-center-label" data-en="LIVE SIGNALS" data-ru="ЖИВЫЕ СИГНАЛЫ" data-ko="라이브 신호">LIVE SIGNALS</div>
+              </div>
+              <div id="radarDots"></div>
+            </div>
+
+            <div class="radar-status-row">
+              <div class="rs-item" onclick="navigateTo('requests',{filterStatus:'new'})" style="cursor:pointer"><div class="rs-dot"></div><div class="rs-val" id="rsNew">—</div><div class="rs-label" data-en="NEW" data-ru="НОВЫЕ" data-ko="신규">NEW</div></div>
+              <div class="rs-item" onclick="navigateTo('requests',{filterStatus:'in_progress'})" style="cursor:pointer"><div class="rs-dot blue"></div><div class="rs-val" id="rsInProgress">—</div><div class="rs-label" data-en="ACTIVE" data-ru="В РАБОТЕ" data-ko="활성">ACTIVE</div></div>
+              <div class="rs-item" onclick="navigateTo('requests',{filterStatus:'completed'})" style="cursor:pointer"><div class="rs-dot green"></div><div class="rs-val" id="rsCompleted">—</div><div class="rs-label" data-en="DONE" data-ru="ГОТОВО" data-ko="완료">DONE</div></div>
+              <div class="rs-item" onclick="navigateTo('requests',{filterStatus:'incomplete'})" style="cursor:pointer"><div class="rs-dot rose"></div><div class="rs-val" id="rsIncomplete">—</div><div class="rs-label" data-en="HOLD" data-ru="ПАУЗА" data-ko="보류">HOLD</div></div>
+            </div>
           </div>
-          <div class="dash-hero-left">
-            <div class="hero-session-badge">
-              <span class="hsb-brand">PULSAR</span>
-              <span class="hsb-divider">·</span>
+
+          <div class="ops-mission-panel">
+            <div class="ops-hero-tag">
+              <span class="tag-brand">PULSAR</span>
+              <span class="tag-sep">·</span>
               <span data-en="MISSION CONTROL" data-ru="ЦЕНТР УПРАВЛЕНИЯ" data-ko="미션 컨트롤">MISSION CONTROL</span>
-              <span class="hsb-divider">·</span>
-              <span id="heroSessionId">SESSION 001</span>
+              <span class="tag-sep">·</span>
+              <span id="heroSessionId">SESSION 00000</span>
             </div>
-            <div class="dash-hero-greeting" id="dashHeroGreeting">
-              <span data-en="ALL SYSTEMS OPERATIONAL" data-ru="ВСЕ СИСТЕМЫ РАБОТАЮТ" data-ko="시스템 정상 작동 중">ALL SYSTEMS OPERATIONAL</span>
-            </div>
-            <div class="dash-hero-name" id="dashHeroName" data-en="Mission Control" data-ru="Центр управления" data-ko="미션 컨트롤">Mission Control</div>
-            <div class="dash-hero-sub" data-en="Every request, document, team signal and client interaction — orchestrated from a single operational console." data-ru="Все заявки, документы, сигналы команды и взаимодействия с клиентами — управляются из единой операционной консоли." data-ko="모든 요청·문서·팀 신호·고객 상호작용을 하나의 운영 콘솔에서 통합 관제.">Every request, document, team signal and client interaction — orchestrated from a single operational console.</div>
-          </div>
-          <div class="dash-hero-right">
-            <div class="dash-hero-status">
-              <div class="dash-hero-status-dot"></div>
-              <div class="dash-hero-status-text">
-                <div class="dash-hero-status-label" data-en="Operator · Live console" data-ru="Оператор · Консоль онлайн" data-ko="오퍼레이터 · 라이브 콘솔">Operator · Live console</div>
-                <div class="dash-hero-status-val" id="dashHeroStatusVal"><span id="dashHeroUserGreet">Welcome</span>, <span id="dashHeroUsername">—</span></div>
-              </div>
-            </div>
-            <div class="dash-hero-stats">
-              <div class="dash-hero-stat">
-                <div class="dash-hero-stat-val" id="dashHeroTotal">—</div>
-                <div class="dash-hero-stat-label" data-en="Live signals" data-ru="Активные сигналы" data-ko="활성 신호">Live signals</div>
-              </div>
-              <div class="dash-hero-stat">
-                <div class="dash-hero-stat-val" id="dashHeroRate">—</div>
-                <div class="dash-hero-stat-label" data-en="Resolution rate" data-ru="Решено" data-ko="해결률">Resolution rate</div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- KPI cards — 6 premium metrics -->
-        <div class="kpi-row">
-          <div class="kpi-card c-indigo clickable" onclick="navigateTo('requests',{filterStatus:''})">
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="Total Active" data-ru="Активных" data-ko="전체 활성">Total Active</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                  <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-val" id="kpiTotal">—</div>
-            <div class="kpi-change flat">
-              <span data-en="All open work" data-ru="Открытые задачи" data-ko="진행 중인 모든 작업">All open work</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkTotal" class="kpi-spark"></canvas></div>
-          </div>
+            <h1 class="ops-mass-title">
+              <span data-en="Mission" data-ru="Центр" data-ko="미션">Mission</span><br>
+              <span class="ops-mass-title-accent" data-en="Control." data-ru="управления." data-ko="컨트롤.">Control.</span>
+            </h1>
 
-          <div class="kpi-card c-amber clickable" onclick="navigateTo('requests',{filterStatus:'new'})">
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="New" data-ru="Новые" data-ko="신규">New</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-val" id="kpiNew">—</div>
-            <div class="kpi-change down">
-              <span data-en="Awaiting triage" data-ru="Ждут обработки" data-ko="검토 대기 중">Awaiting triage</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkNew" class="kpi-spark"></canvas></div>
-          </div>
+            <p class="ops-hero-sub" data-en="Every request, document, team signal and client interaction — orchestrated from a single operational console." data-ru="Все заявки, документы, сигналы команды и взаимодействия с клиентами — управляются из единой операционной консоли." data-ko="모든 요청·문서·팀 신호·고객 상호작용을 하나의 운영 콘솔에서 통합 관제.">Every request, document, team signal and client interaction — orchestrated from a single operational console.</p>
 
-          <div class="kpi-card c-blue clickable" onclick="navigateTo('requests',{filterStatus:'in_progress'})">
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="In Progress" data-ru="В работе" data-ko="처리 중">In Progress</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                </svg>
+            <div class="ops-primary-metric">
+              <div class="opm-label-block">
+                <div class="opm-label" data-en="PRIMARY METRIC · LIVE" data-ru="ОСНОВНОЙ ПОКАЗАТЕЛЬ" data-ko="기본 지표 · 라이브">PRIMARY METRIC · LIVE</div>
+                <div class="opm-val" id="opmTotal">—</div>
+              </div>
+              <div class="opm-spark-wrap"><canvas id="opmSpark"></canvas></div>
+              <div class="opm-trend">
+                <div class="opm-trend-val" id="opmTrendVal">—</div>
+                <div class="opm-trend-label" data-en="RESOLUTION" data-ru="РЕШЕНО" data-ko="해결률">RESOLUTION</div>
               </div>
             </div>
-            <div class="kpi-val" id="kpiInProgress">—</div>
-            <div class="kpi-change up">
-              <span data-en="Being processed" data-ru="Принято в работу" data-ko="검토 중">Being processed</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkInProgress" class="kpi-spark"></canvas></div>
-          </div>
 
-          <div class="kpi-card c-green clickable" onclick="navigateTo('requests',{filterStatus:'completed'})">
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="Completed" data-ru="Завершено" data-ko="완료">Completed</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
+            <div class="ops-feed">
+              <div class="ops-feed-hdr">
+                <span data-en="LIVE FEED · INCOMING SIGNALS" data-ru="ЖИВАЯ ЛЕНТА · ВХОДЯЩИЕ СИГНАЛЫ" data-ko="라이브 피드 · 수신 신호">LIVE FEED · INCOMING SIGNALS</span>
               </div>
-            </div>
-            <div class="kpi-val" id="kpiCompleted">—</div>
-            <div class="kpi-change flat" id="kpiCompletedPct">
-              <span>—</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkCompleted" class="kpi-spark"></canvas></div>
-          </div>
-
-          <div class="kpi-card c-rose clickable" onclick="navigateTo('requests',{filterStatus:'incomplete'})">
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="Incomplete" data-ru="Не завершены" data-ko="미완료">Incomplete</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-val" id="kpiIncomplete">—</div>
-            <div class="kpi-change flat">
-              <span data-en="Missing documents" data-ru="Нет документов" data-ko="서류 미비">Missing documents</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkIncomplete" class="kpi-spark"></canvas></div>
-          </div>
-
-          <div class="kpi-card c-slate clickable" onclick="navigateTo('trash')" data-admin-only>
-            <div class="kpi-top">
-              <span class="kpi-label" data-en="Archived" data-ru="В архиве" data-ko="아카이브">Archived</span>
-              <div class="kpi-icon">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
-                  <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-val" id="kpiTrash">—</div>
-            <div class="kpi-change flat">
-              <span data-en="In trash · restorable" data-ru="В корзине · можно вернуть" data-ko="휴지통 · 복원 가능">In trash · restorable</span>
-            </div>
-            <div class="kpi-spark-wrap"><canvas id="sparkTrash" class="kpi-spark"></canvas></div>
-          </div>
-        </div>
-
-        <!-- Charts -->
-        <div class="charts-row">
-          <div class="charts-left-col">
-          <div class="chart-card chart-card-line">
-            <div class="chart-hdr">
-              <div>
-                <div class="chart-title" data-en="Requests Over Time" data-ru="Заявки по времени" data-ko="기간별 신청 현황">Requests Over Time</div>
-                <div class="chart-subtitle" id="lineChartSubtitle" data-en="Last 30 days · daily volume" data-ru="Последние 30 дней · ежедневный объём" data-ko="최근 30일 · 일별 건수">Last 30 days · daily volume</div>
-              </div>
-              <div class="chart-period-sw" id="chartPeriodSw">
-                <button class="cpd-btn" data-days="7">7D</button>
-                <button class="cpd-btn active" data-days="30">30D</button>
-              </div>
-            </div>
-            <div class="chart-stats-strip">
-              <div class="cstat">
-                <div class="cstat-val" id="cstatTotal">—</div>
-                <div class="cstat-label" data-en="Total" data-ru="Итого" data-ko="합계">Total</div>
-              </div>
-              <div class="cstat-div"></div>
-              <div class="cstat">
-                <div class="cstat-val" id="cstatAvg">—</div>
-                <div class="cstat-label" data-en="Avg / day" data-ru="Ср. в день" data-ko="일 평균">Avg / day</div>
-              </div>
-              <div class="cstat-div"></div>
-              <div class="cstat">
-                <div class="cstat-val" id="cstatPeak">—</div>
-                <div class="cstat-label" data-en="Peak day" data-ru="Пиковый день" data-ko="최대치">Peak day</div>
-              </div>
-            </div>
-            <div class="chart-canvas-wrap" style="height:200px;position:relative">
-              <canvas id="lineChart"></canvas>
+              <div class="ops-feed-list" id="opsFeedList"></div>
             </div>
           </div>
+        </section>
 
-          <!-- Bottom row: Today at a Glance + Activity Heatmap -->
-          <div class="charts-left-bottom">
+        <!-- ════════ TELEMETRY BAND — line chart with inline stats ════════ -->
+        <section class="ops-telemetry-band">
+          <div class="otb-meta">
+            <div class="otb-meta-top">
+              <div class="otb-label" data-en="REQUEST TELEMETRY" data-ru="ТЕЛЕМЕТРИЯ ЗАЯВОК" data-ko="요청 텔레메트리">REQUEST TELEMETRY</div>
+              <div class="otb-title" data-en="Signals over time" data-ru="Сигналы во времени" data-ko="시간별 신호">Signals over time</div>
+              <div class="otb-sub" id="lineChartSubtitle" data-en="Last 30 days · daily volume" data-ru="Последние 30 дней · ежедневный объём" data-ko="최근 30일 · 일별 건수">Last 30 days · daily volume</div>
+            </div>
+            <div class="otb-stats">
+              <div class="otb-stat"><div class="otb-stat-val" id="cstatTotal">—</div><div class="otb-stat-lbl" data-en="TOTAL" data-ru="ИТОГО" data-ko="합계">TOTAL</div></div>
+              <div class="otb-stat"><div class="otb-stat-val" id="cstatAvg">—</div><div class="otb-stat-lbl" data-en="AVG / DAY" data-ru="СРЕДНЕЕ" data-ko="일 평균">AVG / DAY</div></div>
+              <div class="otb-stat"><div class="otb-stat-val" id="cstatPeak">—</div><div class="otb-stat-lbl" data-en="PEAK" data-ru="ПИК" data-ko="최대치">PEAK</div></div>
+            </div>
+            <div class="otb-periods chart-period-sw" id="chartPeriodSw">
+              <button class="cpd-btn" data-days="7">7D</button>
+              <button class="cpd-btn active" data-days="30">30D</button>
+            </div>
+          </div>
+          <div class="otb-chart-wrap"><canvas id="lineChart"></canvas></div>
+        </section>
 
-            <!-- Today at a Glance -->
-            <div class="chart-card">
-              <div class="chart-hdr" style="margin-bottom:14px">
+        <!-- ════════ ASYMMETRIC GRID: Distribution + Side stack ════════ -->
+        <section class="ops-grid-asym">
+          <div class="ops-dist-panel">
+            <div class="odp-donut-wrap">
+              <canvas id="donutChart"></canvas>
+              <div id="donutCenter">
+                <div id="donutCenterVal">—</div>
+                <div id="donutCenterLabel" data-en="total" data-ru="всего" data-ko="전체">total</div>
+              </div>
+            </div>
+            <div>
+              <div class="odp-header">
                 <div>
-                  <div class="chart-title" data-en="Today at a Glance" data-ru="Сегодня" data-ko="오늘 현황">Today at a Glance</div>
-                  <div class="chart-subtitle" id="todayGlanceDate">—</div>
+                  <div class="odp-sub" data-en="STATUS MATRIX" data-ru="МАТРИЦА СТАТУСОВ" data-ko="상태 매트릭스">STATUS MATRIX</div>
+                  <div class="odp-title" data-en="Distribution" data-ru="Распределение" data-ko="분포">Distribution</div>
                 </div>
               </div>
-              <div id="todayGlanceRows"></div>
-            </div>
-
-            <!-- Activity Heatmap -->
-            <div class="chart-card">
-              <div class="chart-hdr" style="margin-bottom:14px">
-                <div>
-                  <div class="chart-title" data-en="Activity Heatmap" data-ru="Тепловая карта" data-ko="활동 히트맵">Activity Heatmap</div>
-                  <div class="chart-subtitle" data-en="Last 5 weeks · daily volume" data-ru="Последние 5 недель · объём по дням" data-ko="최근 5주 · 일별 건수">Last 5 weeks · daily volume</div>
-                </div>
-              </div>
-              <div id="heatmapContainer"></div>
-            </div>
-
-          </div><!-- /charts-left-bottom -->
-          </div><!-- /charts-left-col -->
-
-          <div class="charts-right-col">
-
-            <!-- Donut chart -->
-            <div class="chart-card">
-              <div class="chart-hdr">
-                <div>
-                  <div class="chart-title" data-en="By Status" data-ru="По статусу" data-ko="상태별 분포">By Status</div>
-                  <div class="chart-subtitle" data-en="Request distribution" data-ru="Распределение заявок" data-ko="신청서 분포">Request distribution</div>
-                </div>
-              </div>
-              <div class="chart-canvas-wrap" style="height:172px;display:flex;align-items:center;justify-content:center;position:relative">
-                <canvas id="donutChart"></canvas>
-                <div id="donutCenter">
-                  <div id="donutCenterVal">—</div>
-                  <div id="donutCenterLabel" data-en="total" data-ru="всего" data-ko="전체">total</div>
-                </div>
-              </div>
-              <div class="chart-legend">
+              <div class="chart-legend odp-legend">
                 <div class="legend-item">
                   <div class="legend-left"><span class="legend-dot" style="background:#10b981;color:#10b981"></span><span class="legend-label" data-en="Completed" data-ru="Завершена" data-ko="완료">Completed</span></div>
                   <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barCompleted" style="width:0%"></div></div><span class="legend-pct" id="legendCompletedPct">—</span><span class="legend-val" id="legendCompleted">—</span></div>
@@ -384,72 +269,89 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Source breakdown -->
-            <div class="chart-card">
-              <div class="chart-hdr" style="margin-bottom:14px">
+          <div class="ops-side-col">
+            <div class="ops-side-card">
+              <div class="osc-header">
                 <div>
-                  <div class="chart-title" data-en="Request Sources" data-ru="Источники заявок" data-ko="접수 경로">Request Sources</div>
-                  <div class="chart-subtitle" data-en="Origin of all active requests" data-ru="Откуда поступают заявки" data-ko="활성 신청서 접수 경로">Origin of all active requests</div>
+                  <div class="osc-sub" data-en="24H WINDOW" data-ru="24 ЧАСА" data-ko="24시간">24H WINDOW</div>
+                  <div class="osc-title" data-en="Today" data-ru="Сегодня" data-ko="오늘">Today</div>
+                </div>
+                <div class="osc-sub" id="todayGlanceDate">—</div>
+              </div>
+              <div id="todayGlanceRows"></div>
+            </div>
+            <div class="ops-side-card">
+              <div class="osc-header">
+                <div>
+                  <div class="osc-sub" data-en="INGRESS CHANNELS" data-ru="КАНАЛЫ ВХОДА" data-ko="유입 채널">INGRESS CHANNELS</div>
+                  <div class="osc-title" data-en="Source Mix" data-ru="Источники" data-ko="소스 믹스">Source Mix</div>
                 </div>
               </div>
               <div id="sourceBreakdown"></div>
             </div>
+          </div>
+        </section>
 
-          </div><!-- /charts-right-col -->
-        </div><!-- /charts-row -->
+        <!-- ════════ ACTIVITY HEATMAP BAND ════════ -->
+        <section class="ops-heatmap-band">
+          <div class="ohb-header">
+            <div class="ohb-label-block">
+              <div class="ohb-tag" data-en="OPERATIONAL DENSITY" data-ru="ПЛОТНОСТЬ ОПЕРАЦИЙ" data-ko="운영 밀도">OPERATIONAL DENSITY</div>
+              <div class="ohb-title" data-en="Activity Map · 5 weeks" data-ru="Карта активности · 5 недель" data-ko="활동 맵 · 5주">Activity Map · 5 weeks</div>
+            </div>
+            <div class="ohb-sub" data-en="Each cell = daily signal volume" data-ru="Каждая ячейка = объём за день" data-ko="셀당 일별 신호량">Each cell = daily signal volume</div>
+          </div>
+          <div id="heatmapContainer"></div>
+        </section>
 
-        <!-- Insight analytics cards -->
-        <div class="insight-row">
-
-          <div class="insight-card">
-            <div class="ic-top">
-              <span class="ic-label" data-en="Total · 30d" data-ru="Итого · 30д" data-ko="합계 · 30일">Total · 30d</span>
+        <!-- ════════ INSIGHT MODULES ════════ -->
+        <section class="ops-insights">
+          <div class="ops-insight-card">
+            <div class="oic-top">
+              <span class="oic-label" data-en="TOTAL · 30D" data-ru="ИТОГО · 30Д" data-ko="합계 · 30일">TOTAL · 30D</span>
               <span class="ic-delta" id="icDeltaTotal"></span>
             </div>
-            <div class="ic-val" id="icValTotal">—</div>
-            <div class="ic-sub" data-en="requests received" data-ru="заявок получено" data-ko="접수된 신청">requests received</div>
+            <div class="oic-val" id="icValTotal">—</div>
+            <div class="oic-sub" data-en="signals received" data-ru="сигналов получено" data-ko="수신된 신호">signals received</div>
             <div class="ic-spark-wrap"><canvas id="icSparkTotal" class="ic-spark"></canvas></div>
           </div>
-
-          <div class="insight-card">
-            <div class="ic-top">
-              <span class="ic-label" data-en="Daily avg · 30d" data-ru="Среднее/день" data-ko="일 평균 · 30일">Daily avg · 30d</span>
+          <div class="ops-insight-card">
+            <div class="oic-top">
+              <span class="oic-label" data-en="DAILY AVG" data-ru="СРЕДНЕЕ" data-ko="일 평균">DAILY AVG</span>
               <span class="ic-delta" id="icDeltaAvg"></span>
             </div>
-            <div class="ic-val" id="icValAvg">—</div>
-            <div class="ic-sub" data-en="requests per day" data-ru="заявок в день" data-ko="일별 신청 수">requests per day</div>
+            <div class="oic-val" id="icValAvg">—</div>
+            <div class="oic-sub" data-en="signals per day" data-ru="сигналов в день" data-ko="일별 신호 수">signals per day</div>
             <div class="ic-spark-wrap"><canvas id="icSparkAvg" class="ic-spark"></canvas></div>
           </div>
-
-          <div class="insight-card">
-            <div class="ic-top">
-              <span class="ic-label" data-en="Peak day · 30d" data-ru="Пиковый день" data-ko="최대치 · 30일">Peak day · 30d</span>
+          <div class="ops-insight-card">
+            <div class="oic-top">
+              <span class="oic-label" data-en="PEAK / 24H" data-ru="ПИК / 24Ч" data-ko="피크 / 24시간">PEAK / 24H</span>
               <span class="ic-delta" id="icDeltaPeak"></span>
             </div>
-            <div class="ic-val" id="icValPeak">—</div>
-            <div class="ic-sub" data-en="max in one day" data-ru="макс. за один день" data-ko="하루 최대">max in one day</div>
+            <div class="oic-val" id="icValPeak">—</div>
+            <div class="oic-sub" data-en="max in one day" data-ru="макс. за один день" data-ko="하루 최대">max in one day</div>
             <div class="ic-spark-wrap"><canvas id="icSparkPeak" class="ic-spark"></canvas></div>
           </div>
-
-          <div class="insight-card">
-            <div class="ic-top">
-              <span class="ic-label" data-en="This week" data-ru="Эта неделя" data-ko="이번 주">This week</span>
+          <div class="ops-insight-card">
+            <div class="oic-top">
+              <span class="oic-label" data-en="WEEK ZONE" data-ru="НЕДЕЛЯ" data-ko="주간 영역">WEEK ZONE</span>
               <span class="ic-delta" id="icDeltaWeek"></span>
             </div>
-            <div class="ic-val" id="icValWeek">—</div>
-            <div class="ic-sub" data-en="last 7 days" data-ru="последние 7 дней" data-ko="최근 7일">last 7 days</div>
+            <div class="oic-val" id="icValWeek">—</div>
+            <div class="oic-sub" data-en="last 7 days" data-ru="последние 7 дней" data-ko="최근 7일">last 7 days</div>
             <div class="ic-spark-wrap"><canvas id="icSparkWeek" class="ic-spark"></canvas></div>
           </div>
+        </section>
 
-        </div>
-
-        <!-- Status Distribution stacked chart -->
-        <div class="chart-card" style="margin-bottom:20px">
-          <div class="chart-hdr">
-            <div>
-              <div class="chart-title" data-en="Daily Status Distribution" data-ru="Распределение статусов по дням" data-ko="일별 상태 분포">Daily Status Distribution</div>
-              <div class="chart-subtitle" data-en="Last 30 days · stacked by status" data-ru="Последние 30 дней · по статусу" data-ko="최근 30일 · 상태별 분포">Last 30 days · stacked by status</div>
+        <!-- ════════ STATUS TELEMETRY (stacked chart) ════════ -->
+        <section class="ops-stack-panel">
+          <div class="osp-header">
+            <div class="osp-title-block">
+              <div class="osp-tag" data-en="STATUS TELEMETRY · 30D" data-ru="ТЕЛЕМЕТРИЯ СТАТУСОВ · 30Д" data-ko="상태 텔레메트리 · 30일">STATUS TELEMETRY · 30D</div>
+              <div class="osp-title" data-en="Signal flow over time" data-ru="Поток сигналов во времени" data-ko="시간별 신호 흐름">Signal flow over time</div>
             </div>
             <div class="stacked-legend">
               <div class="sl-item"><span class="sl-dot" style="background:#f59e0b;color:#f59e0b"></span><span class="sl-label" data-en="New" data-ru="Новые" data-ko="신규">New</span></div>
@@ -458,41 +360,29 @@
               <div class="sl-item"><span class="sl-dot" style="background:#f43f5e;color:#f43f5e"></span><span class="sl-label" data-en="Incomplete" data-ru="Не завершена" data-ko="미완료">Incomplete</span></div>
             </div>
           </div>
-          <div class="chart-canvas-wrap" style="height:200px;position:relative">
+          <div class="chart-canvas-wrap" style="height:240px;position:relative">
             <canvas id="stackedChart"></canvas>
           </div>
-        </div>
+        </section>
 
-        <!-- Recent table -->
-        <div class="table-card">
-          <div class="table-hdr">
-            <div style="display:flex;align-items:center;gap:10px">
-              <span class="table-title" data-en="Recent Requests" data-ru="Последние заявки" data-ko="최근 신청서">Recent Requests</span>
+        <!-- ════════ RECENT SIGNAL STREAM ════════ -->
+        <section class="ops-recent">
+          <div class="or-header">
+            <div class="or-title-block">
+              <div class="or-tag" data-en="RECENT · LIVE" data-ru="ПОСЛЕДНИЕ · LIVE" data-ko="최근 · 라이브">RECENT · LIVE</div>
+              <div class="or-title" data-en="Signal Stream" data-ru="Поток сигналов" data-ko="신호 스트림">Signal Stream</div>
               <span class="table-count" id="dashTableCount">—</span>
             </div>
-            <div class="table-actions">
-              <button class="btn-ghost" onclick="navigateTo('requests')">
-                <span data-en="View all" data-ru="Все заявки" data-ko="전체 보기">View all</span>
-              </button>
-            </div>
+            <button class="btn-ghost" onclick="navigateTo('requests')">
+              <span data-en="Open Request Flow →" data-ru="Открыть поток заявок →" data-ko="요청 흐름 열기 →">Open Request Flow →</span>
+            </button>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th data-en="ID" data-ru="ID" data-ko="ID">ID</th>
-                <th data-en="Client" data-ru="Клиент" data-ko="고객">Client</th>
-                <th data-en="Description" data-ru="Описание" data-ko="내용">Description</th>
-                <th data-en="Date" data-ru="Дата" data-ko="날짜">Date</th>
-                <th data-en="Status" data-ru="Статус" data-ko="상태">Status</th>
-                <th data-en="Source" data-ru="Источник" data-ko="접수 경로">Source</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
+          <div class="or-list" id="opsRecentList"></div>
+          <div id="tableBody" style="display:none"></div>
+        </section>
 
       </div><!-- /viewDashboard -->
+
 
       <!-- ─── Request Flow view ─── -->
       <div class="view-section" id="viewRequests" style="display:none">
@@ -1350,30 +1240,29 @@
   });
 
   /* ── Dashboard ── */
+  // Helper: safely set textContent on an element if it exists
+  function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
   async function loadDashboard() {
-    ['kpiTotal','kpiCompleted','kpiNew','kpiInProgress','kpiIncomplete','kpiTrash'].forEach(id => {
+    const skeleIds = ['radarCenterVal','rsNew','rsInProgress','rsCompleted','rsIncomplete','opmTotal','opmTrendVal'];
+    skeleIds.forEach(id => {
       const el = document.getElementById(id);
-      if (el && !el._skeled) { el._skeled = true; el.style.cssText = 'display:inline-block;width:56px;height:28px;border-radius:6px;vertical-align:middle'; el.classList.add('skeleton'); el.textContent = ''; }
+      if (el && !el._skeled) {
+        el._skeled = true;
+        el.dataset._origStyle = el.style.cssText;
+        el.style.cssText = 'display:inline-block;width:54px;height:24px;border-radius:6px;vertical-align:middle;color:transparent';
+        el.classList.add('skeleton');
+      }
     });
+
     const r = await api('GET', '/api/stats');
-    ['kpiTotal','kpiCompleted','kpiNew','kpiInProgress','kpiIncomplete','kpiTrash'].forEach(id => {
+
+    skeleIds.forEach(id => {
       const el = document.getElementById(id);
-      if (el) { el._skeled = false; el.style.cssText = ''; el.classList.remove('skeleton'); }
+      if (el) { el._skeled = false; el.style.cssText = el.dataset._origStyle || ''; el.classList.remove('skeleton'); }
     });
     if (!r.ok) return;
     const { active, inTrash, daily, dailyByStatus, bySource } = r.data;
-
-    // Hero — user greeting in live status panel
-    const hour = new Date().getHours();
-    const greetingByHour = hour < 12
-      ? (L.lang === 'ru' ? 'Доброе утро' : L.lang === 'ko' ? '좋은 아침이에요' : 'Good morning')
-      : hour < 18
-        ? (L.lang === 'ru' ? 'Добрый день' : L.lang === 'ko' ? '안녕하세요' : 'Good afternoon')
-        : (L.lang === 'ru' ? 'Добрый вечер' : L.lang === 'ko' ? '좋은 저녁이에요' : 'Good evening');
-    const greetEl = document.getElementById('dashHeroUserGreet');
-    if (greetEl) greetEl.textContent = greetingByHour;
-    const nameEl = document.getElementById('dashHeroUsername');
-    if (nameEl) nameEl.textContent = currentUser.username;
 
     // Session badge — deterministic short ID from username + today's date
     const sidEl = document.getElementById('heroSessionId');
@@ -1383,56 +1272,137 @@
       for (let i = 0; i < seedStr.length; i++) h = ((h << 5) + h + seedStr.charCodeAt(i)) >>> 0;
       const sid = String(h % 100000).padStart(5, '0');
       sidEl.textContent = `SESSION ${sid}`;
+
+      // Bearing — fake but derived from same hash so it varies per operator
+      const bearingEl = document.getElementById('opsBearing');
+      if (bearingEl) bearingEl.textContent = String(h % 360).padStart(3, '0');
     }
-    document.getElementById('dashHeroTotal').textContent = active.total ?? 0;
+
+    // ─── Radar + primary metric ───
+    setText('radarCenterVal', active.total ?? 0);
+    setText('rsNew',         active.new ?? 0);
+    setText('rsInProgress',  active.in_progress ?? 0);
+    setText('rsCompleted',   active.completed ?? 0);
+    setText('rsIncomplete',  active.incomplete ?? 0);
+
+    setText('opmTotal', active.total ?? 0);
     const pct = active.total ? Math.round((active.completed / active.total) * 100) : 0;
-    document.getElementById('dashHeroRate').textContent = pct + '%';
+    const trendEl = document.getElementById('opmTrendVal');
+    if (trendEl) {
+      trendEl.textContent = pct + '%';
+      trendEl.style.color = pct >= 50 ? '#34d399' : pct >= 25 ? '#fbbf24' : '#fb7185';
+    }
 
-    document.getElementById('kpiTotal').textContent = active.total ?? 0;
-    document.getElementById('kpiCompleted').textContent = active.completed ?? 0;
-    document.getElementById('kpiNew').textContent = active.new ?? 0;
-    document.getElementById('kpiInProgress').textContent = active.in_progress ?? 0;
-    document.getElementById('kpiIncomplete').textContent = active.incomplete ?? 0;
-    document.getElementById('kpiTrash').textContent = inTrash ?? 0;
+    // ─── Status distribution legend ───
+    setText('legendCompleted',  active.completed ?? 0);
+    setText('legendInProgress', active.in_progress ?? 0);
+    setText('legendNew',        active.new ?? 0);
+    setText('legendIncomplete', active.incomplete ?? 0);
+    setText('donutCenterVal',   active.total ?? 0);
 
-    const pctEl = document.getElementById('kpiCompletedPct');
-    pctEl.textContent = T('completion_rate', pct);
-    pctEl.className = 'kpi-change ' + (pct >= 50 ? 'up' : 'flat');
-
-    document.getElementById('legendCompleted').textContent = active.completed ?? 0;
-    document.getElementById('legendInProgress').textContent = active.in_progress ?? 0;
-    document.getElementById('legendNew').textContent = active.new ?? 0;
-    document.getElementById('legendIncomplete').textContent = active.incomplete ?? 0;
-    document.getElementById('donutCenterVal').textContent = active.total ?? 0;
-
-    // Legend percentages + progress bars
     const tot = active.total || 1;
     const pctOf = n => Math.round((n || 0) / tot * 100);
     const setBar = (pctId, barId, n, color) => {
       const p = pctOf(n);
-      document.getElementById(pctId).textContent = p + '%';
+      setText(pctId, p + '%');
       const bar = document.getElementById(barId);
-      if (bar) { bar.style.width = p + '%'; bar.style.background = color; }
+      if (bar) { bar.style.width = p + '%'; bar.style.background = color; bar.style.color = color; }
     };
-    setBar('legendCompletedPct',  'barCompleted',  active.completed,  '#19b885');
-    setBar('legendInProgressPct', 'barInProgress', active.in_progress,'#4a7fde');
-    setBar('legendNewPct',        'barNew',        active.new,        '#e89d1a');
-    setBar('legendIncompletePct', 'barIncomplete', active.incomplete, '#e04d6a');
+    setBar('legendCompletedPct',  'barCompleted',  active.completed,  '#10b981');
+    setBar('legendInProgressPct', 'barInProgress', active.in_progress,'#3b82f6');
+    setBar('legendNewPct',        'barNew',        active.new,        '#f59e0b');
+    setBar('legendIncompletePct', 'barIncomplete', active.incomplete, '#f43f5e');
 
+    // ─── Sidebar badges ───
     const trashBadge = document.getElementById('trashBadge');
-    if (inTrash > 0) { trashBadge.textContent = inTrash; trashBadge.style.display = ''; }
-    else trashBadge.style.display = 'none';
+    if (trashBadge) {
+      if (inTrash > 0) { trashBadge.textContent = inTrash; trashBadge.style.display = ''; }
+      else trashBadge.style.display = 'none';
+    }
+    setText('navBadgeNew', active.new ?? 0);
 
-    document.getElementById('navBadgeNew').textContent = active.new ?? 0;
-
+    // ─── Build charts + radar dots + primary spark + live feed ───
     buildCharts(active, daily, dailyByStatus, bySource || []);
 
     const appsR = await api('GET', '/api/applications');
     if (appsR.ok) {
       const apps = appsR.data;
-      document.getElementById('dashTableCount').textContent = apps.length;
-      renderDashTable(apps.slice(0, 10));
+      setText('dashTableCount', apps.length);
+      renderRadarDots(apps);
+      renderLiveFeed(apps.slice(0, 8));
+      renderOpsRecent(apps.slice(0, 8));
     }
+  }
+
+  // ─── Radar dot rendering ───
+  function renderRadarDots(apps) {
+    const host = document.getElementById('radarDots');
+    if (!host) return;
+    host.innerHTML = '';
+    // Show up to 28 most-recent active dots, positioned by age (recent = inner, old = outer)
+    const live = apps.filter(a => !a.deleted_at).slice(0, 28);
+    const now = Date.now();
+    const maxAgeMs = 30 * 24 * 60 * 60 * 1000;
+    live.forEach((a, idx) => {
+      const age = Math.min(maxAgeMs, now - new Date(a.created_at).getTime());
+      const ageRatio = age / maxAgeMs;                  // 0 (now) → 1 (30d old)
+      const radius = 12 + ageRatio * 38;                // 12% → 50% from center
+      // Spread evenly with stable angle from id hash
+      const angle = ((a.id * 73 + a.queue_number * 31) % 360) * Math.PI / 180;
+      const cx = 50 + Math.cos(angle) * radius;
+      const cy = 50 + Math.sin(angle) * radius;
+      const dot = document.createElement('div');
+      dot.className = 'radar-dot d-' + a.status;
+      dot.style.left = cx + '%';
+      dot.style.top  = cy + '%';
+      dot.style.animationDelay = (idx * 0.15) + 's';
+      dot.title = `#${a.id} ${a.name} · ${a.status}`;
+      dot.addEventListener('click', () => openDrawer(a.id));
+      dot.style.cursor = 'pointer';
+      dot.style.pointerEvents = 'auto';
+      host.appendChild(dot);
+    });
+  }
+
+  // ─── Live feed (right column of hero) ───
+  function renderLiveFeed(apps) {
+    const host = document.getElementById('opsFeedList');
+    if (!host) return;
+    const colors = { new: '#f59e0b', in_progress: '#3b82f6', completed: '#10b981', incomplete: '#f43f5e' };
+    const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
+    host.innerHTML = apps.slice(0, 5).map(a => {
+      const t = new Date(a.created_at);
+      const time = t.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+      const color = colors[a.status] || '#9292b2';
+      return `<div class="ofl-item" onclick="openDrawer(${a.id})">
+        <span class="ofl-time">${time}</span>
+        <span class="ofl-name">${esc(a.name)}</span>
+        <span class="ofl-status-dot" style="background:${color};color:${color}"></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)">#${String(a.id).padStart(4,'0')}</span>
+      </div>`;
+    }).join('') || `<div style="font-size:11.5px;color:var(--t3);font-family:'JetBrains Mono',monospace">— no recent signals —</div>`;
+  }
+
+  // ─── Recent signals (bottom of dashboard) ───
+  function renderOpsRecent(apps) {
+    const host = document.getElementById('opsRecentList');
+    if (!host) return;
+    if (!apps.length) {
+      host.innerHTML = `<div style="padding:32px 0;text-align:center;color:var(--t3);font-size:13px">${T('no_requests')}</div>`;
+      return;
+    }
+    const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
+    host.innerHTML = apps.map(a => {
+      const time = new Date(a.created_at).toLocaleString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+      return `<div class="or-row" onclick="openDrawer(${a.id})">
+        <span class="or-id">#${String(a.id).padStart(4,'0')}</span>
+        <span class="or-name">${esc(a.name)}</span>
+        <span class="or-comment">${esc(a.comment || '—').slice(0, 70)}</span>
+        <span class="or-time">${time}</span>
+        ${statusBadge(a.status)}
+        <span class="or-source">${sourceLabel(a.source)}</span>
+      </div>`;
+    }).join('');
   }
 
   function buildCharts(active, daily, dailyByStatus, bySource) {
@@ -1442,12 +1412,70 @@
     _lastBySource     = bySource || [];
     buildLineChart(chartPeriod);
     buildDonutChart(active);
-    buildSparklines();
+    buildPrimarySpark();
     buildInsightCards();
     buildSourceCard(_lastBySource);
     buildStackedChart();
     buildTodayGlance();
     buildActivityHeatmap();
+  }
+
+  // ─── Primary metric sparkline (in hero) ───
+  let _opmSparkChart = null;
+  function buildPrimarySpark() {
+    const canvas = document.getElementById('opmSpark');
+    if (!canvas) return;
+    const DAYS = 21;
+    const dayMap = {};
+    _lastDaily.forEach(d => { dayMap[d.day] = d.count; });
+    const vals = [];
+    for (let i = DAYS - 1; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      vals.push(dayMap[d.toISOString().slice(0, 10)] || 0);
+    }
+    if (_opmSparkChart) {
+      _opmSparkChart.data.datasets[0].data = vals;
+      _opmSparkChart.update('none');
+      return;
+    }
+    _opmSparkChart = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: vals.map((_, i) => i),
+        datasets: [{
+          data: vals,
+          borderColor: (ctx) => {
+            const { ctx: c, chartArea: ca } = ctx.chart;
+            if (!ca) return '#818cf8';
+            const g = c.createLinearGradient(ca.left, 0, ca.right, 0);
+            g.addColorStop(0, '#6366f1'); g.addColorStop(0.5, '#818cf8'); g.addColorStop(1, '#c084fc');
+            return g;
+          },
+          borderWidth: 2,
+          backgroundColor: (ctx) => {
+            const { ctx: c, chartArea: ca } = ctx.chart;
+            if (!ca) return 'transparent';
+            const g = c.createLinearGradient(0, ca.top, 0, ca.bottom);
+            g.addColorStop(0, 'rgba(129,140,248,0.50)');
+            g.addColorStop(0.55, 'rgba(129,140,248,0.14)');
+            g.addColorStop(1, 'rgba(129,140,248,0)');
+            return g;
+          },
+          fill: 'origin',
+          tension: 0.45,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 700, easing: 'easeOutQuart' },
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false, beginAtZero: true, grace: '15%' } },
+        layout: { padding: { left: 4, right: 4, top: 4, bottom: 4 } }
+      }
+    });
   }
 
   function sparkSeries(statusFilter, days) {
