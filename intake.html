@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus — Подать заявку</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='16' y='23' font-size='20' font-weight='900' text-anchor='middle' fill='white' font-family='system-ui,sans-serif'>N</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px 60px;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 30%, rgba(99,102,241,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 55% at 80% 70%, rgba(139,92,246,0.07) 0%, transparent 60%),
+        #f5f5fb;
+    }
+
+    .container { width: 100%; max-width: 560px; }
+
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.30);
+      flex-shrink: 0;
+    }
+    .brand-name { font-size: 17px; font-weight: 800; color: #0c0c18; letter-spacing: -0.3px; }
+    .brand-sub  { font-size: 11px; color: #9292b2; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .page-title { font-size: 26px; font-weight: 800; color: #0c0c18; letter-spacing: -0.6px; margin-bottom: 6px; }
+    .page-sub   { font-size: 14px; color: #6b6b8a; margin-bottom: 28px; }
+
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(9,9,24,0.07), 0 0 0 1px rgba(0,0,0,0.028);
+    }
+
+    .form-row { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #4a4a68;
+      margin-bottom: 6px;
+      letter-spacing: 0.1px;
+    }
+    .form-label .req { color: #e04d6a; margin-left: 2px; }
+    .form-input, .form-textarea {
+      width: 100%;
+      border: 1.5px solid #e8e8f4;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #0c0c18;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.10);
+    }
+    .form-textarea { resize: vertical; min-height: 100px; }
+
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-submit:hover   { opacity: 0.90; }
+    .btn-submit:active  { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .form-error {
+      background: #fff0f3;
+      border: 1px solid rgba(224,77,106,0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #e04d6a;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .form-error.visible { display: block; }
+
+    /* Success state */
+    .success-card {
+      text-align: center;
+      padding: 20px 0;
+      display: none;
+    }
+    .success-card.visible { display: block; }
+    .success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(25,184,133,0.12);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .success-title { font-size: 22px; font-weight: 800; color: #0c0c18; letter-spacing: -0.4px; margin-bottom: 8px; }
+    .success-body  { font-size: 14px; color: #6b6b8a; line-height: 1.6; margin-bottom: 8px; }
+    .queue-badge {
+      display: inline-block;
+      background: rgba(99,102,241,0.08);
+      color: #6366f1;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin: 12px 0;
+      letter-spacing: 0.3px;
+    }
+    .track-link {
+      font-size: 13px; color: #6b6b8a; margin-top: 12px;
+    }
+    .track-link a { color: #6366f1; font-weight: 600; text-decoration: none; }
+    .track-link a:hover { text-decoration: underline; }
+
+    .footer-note {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #9292b2;
+    }
+    .footer-note a { color: #6366f1; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="white">
+          <path d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V5a1 1 0 010-.083V4zm9 0a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.083A1 1 0 0116 8V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L14.586 5H13a1 1 0 01-1-1zM5 12a1 1 0 011 1v1.586l2.293-2.293a1 1 0 011.414 1.414L7.414 16H9a1 1 0 010 2H6a1 1 0 01-1-1v-3a1 1 0 011-1zm10 1a1 1 0 10-2 0v1.586l-2.293-2.293a1 1 0 10-1.414 1.414L11.586 16H10a1 1 0 100 2h3a1 1 0 001-1v-3z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Nexus CRM</div>
+        <div class="brand-sub">Service Centre</div>
+      </div>
+    </div>
+
+    <div class="page-title">Подать заявку</div>
+    <div class="page-sub">Заполните форму — мы свяжемся с вами в течение рабочего дня.</div>
+
+    <div class="card">
+      <div class="form-error" id="formError"></div>
+
+      <!-- Form -->
+      <form id="intakeForm">
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0">
+            <label class="form-label">Имя <span class="req">*</span></label>
+            <input class="form-input" name="name" required placeholder="Иванов Иван">
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label class="form-label">Телефон <span class="req">*</span></label>
+            <input class="form-input" name="phone" required placeholder="+7 900 000-0000">
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:18px">
+          <label class="form-label">Email <span style="color:#9292b2;font-weight:400">(необязательно)</span></label>
+          <input class="form-input" name="email" type="email" placeholder="your@email.com">
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Описание обращения <span style="color:#9292b2;font-weight:400">(необязательно)</span></label>
+          <textarea class="form-textarea" name="comment" placeholder="Опишите суть вашего обращения…"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
+      </form>
+
+      <!-- Success state -->
+      <div class="success-card" id="successCard">
+        <div class="success-icon">
+          <svg width="28" height="28" viewBox="0 0 20 20" fill="#19b885">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="success-title">Заявка принята!</div>
+        <div class="success-body">Ваше обращение зарегистрировано. Мы свяжемся с вами в ближайшее время.</div>
+        <div class="queue-badge" id="queueBadge">Номер заявки: —</div>
+        <div class="track-link">Отследить статус заявки: <a href="#" id="trackLink">по номеру очереди</a></div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Уже есть аккаунт? <a href="/login">Войти в систему</a>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const form       = document.getElementById('intakeForm');
+    const submitBtn  = document.getElementById('submitBtn');
+    const errorEl    = document.getElementById('formError');
+    const successEl  = document.getElementById('successCard');
+    const queueEl    = document.getElementById('queueBadge');
+    const trackLink  = document.getElementById('trackLink');
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add('visible');
+    }
+    function clearError() { errorEl.classList.remove('visible'); }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearError();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Отправляем…';
+
+      const body = Object.fromEntries(new FormData(form));
+      body.source = 'web_form';
+
+      try {
+        const r = await fetch('/api/intake', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          showError(data.error || 'Произошла ошибка. Попробуйте ещё раз.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Отправить заявку';
+          return;
+        }
+        // Success
+        queueEl.textContent = 'Номер заявки: #' + data.queue_number;
+        trackLink.href = '/api/intake/track?q=' + data.queue_number;
+        trackLink.textContent = '#' + data.queue_number;
+        form.style.display = 'none';
+        successEl.classList.add('visible');
+      } catch {
+        showError('Ошибка сети. Проверьте подключение и попробуйте снова.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Отправить заявку';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

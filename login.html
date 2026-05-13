@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus CRM — Sign In</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='16' y='23' font-size='20' font-weight='900' text-anchor='middle' fill='white' font-family='system-ui,sans-serif'>N</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse 70% 55% at 20% 35%, rgba(99,102,241,0.13) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 55% at 78% 65%, rgba(139,92,246,0.08) 0%, transparent 65%),
+        #0d0d1b;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 30px 80px rgba(0,0,0,0.65),
+        0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    .card-top {
+      background: linear-gradient(150deg, #0f0f21 0%, #14142f 100%);
+      padding: 32px 32px 28px;
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 20px;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(99,102,241,0.45);
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .card-top h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .card-top p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 400;
+    }
+
+    .card-body {
+      padding: 30px 32px 32px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #5a5a78;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: #f4f4f9;
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-family: inherit;
+      font-size: 14px;
+      color: #0f0f1e;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder { color: #b8b8cc; }
+
+    input:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+
+    .error-msg {
+      display: none;
+      background: #fff1f1;
+      border: 1px solid #fecaca;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: #b91c1c;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .btn {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #6366f1 0%, #5254d8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99,102,241,0.38);
+      transition: transform 0.17s, box-shadow 0.17s, opacity 0.17s;
+      letter-spacing: -0.1px;
+      margin-top: 4px;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.48); }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 11.5px;
+      color: #b0b0c8;
+    }
+
+    .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner  { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="19" height="19" viewBox="0 0 17 17" fill="none">
+          <rect width="7.5" height="7.5" rx="2" fill="white"/>
+          <rect x="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
+          <rect y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
+          <rect x="9.5" y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.35)"/>
+        </svg>
+      </div>
+      <span class="logo-text">Nexus CRM</span>
+    </div>
+    <h1>Welcome back</h1>
+    <p>Sign in to your workspace</p>
+  </div>
+
+  <div class="card-body">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn" id="submitBtn">
+        <span class="btn-text">Sign In</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="footer-note">
+      Demo: <strong>admin</strong> / admin123 &nbsp;·&nbsp; <strong>employee</strong> / employee123
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('submitBtn');
+  const errEl    = document.getElementById('errorMsg');
+
+  errEl.classList.remove('visible');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch('/auth/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent = data.error || 'Login failed';
+      errEl.classList.add('visible');
+      return;
+    }
+
+    window.location.href = data.user.role === 'admin' ? '/crm.html' : '/crm.html';
+  } catch {
+    errEl.textContent = 'Network error. Please try again.';
+    errEl.classList.add('visible');
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse 70% 55% at 20% 35%, rgba(99,102,241,0.14) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 55% at 78% 65%, rgba(139,92,246,0.09) 0%, transparent 65%),
+        #0d0d1b;
+    }
+
+    .chat-widget {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .chat-card {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 80px rgba(0,0,0,0.65),
+        0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    /* ─── Header ─── */
+    .chat-header {
+      background: linear-gradient(150deg, #0f0f21 0%, #14142f 100%);
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .bot-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(99,102,241,0.45);
+    }
+
+    .bot-avatar svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .bot-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bot-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.2px;
+    }
+
+    .bot-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 2.5px rgba(34,197,94,0.2);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 2.5px rgba(34,197,94,0.2); }
+      50% { box-shadow: 0 0 0 4px rgba(34,197,94,0.1), 0 0 10px rgba(34,197,94,0.15); }
+    }
+
+    .status-label {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 400;
+    }
+
+    .lang-btn {
+      height: 31px;
+      padding: 0 13px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      color: rgba(255,255,255,0.55);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    /* ─── Messages ─── */
+    .messages-area {
+      background: #f6f6fb;
+      height: 450px;
+      overflow-y: auto;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,0,0,0.1) transparent;
+    }
+
+    .messages-area::-webkit-scrollbar { width: 3px; }
+    .messages-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+
+    .msg {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg.bot { align-items: flex-start; }
+    .msg.user { align-items: flex-end; }
+
+    .bubble {
+      max-width: 82%;
+      padding: 11px 15px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #0f0f1e;
+      background: #fff;
+      border-radius: 5px 18px 18px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.035);
+      word-break: break-word;
+    }
+
+    .msg.user .bubble {
+      background: linear-gradient(145deg, #6366f1 0%, #5254d8 100%);
+      color: #fff;
+      border-radius: 18px 5px 18px 18px;
+      box-shadow: 0 4px 16px rgba(99,102,241,0.32);
+    }
+
+    .msg-time {
+      font-size: 10.5px;
+      color: #c0c0cc;
+      margin-top: 5px;
+      padding: 0 4px;
+    }
+
+    .msg.user .msg-time { text-align: right; }
+
+    /* ─── Quick reply panel (bottom keyboard) ─── */
+    .qr-panel {
+      background: #fafafd;
+      border-top: 1px solid #eeeef6;
+      padding: 0 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.24s ease, padding 0.24s ease;
+    }
+
+    .qr-panel.open {
+      padding: 10px 14px 12px;
+      max-height: 180px;
+    }
+
+    .qr-chip {
+      padding: 7px 14px;
+      background: #fff;
+      border: 1.5px solid #e0e0ef;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #2a2a3e;
+      cursor: pointer;
+      transition: background 0.14s, border-color 0.14s, color 0.14s, transform 0.1s;
+      white-space: nowrap;
+      line-height: 1.3;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .qr-chip:hover {
+      background: #ededfa;
+      border-color: #9898d8;
+      color: #4040b0;
+    }
+
+    .qr-chip:active { transform: scale(0.95); }
+
+    /* Typing indicator */
+    .typing-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 14px;
+      background: #fff;
+      border-radius: 5px 18px 18px 18px;
+      width: fit-content;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.035);
+    }
+
+    .typing-wrap span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #c8c8d8;
+      animation: bounce-dot 1.3s ease-in-out infinite;
+    }
+
+    .typing-wrap span:nth-child(2) { animation-delay: 0.18s; }
+    .typing-wrap span:nth-child(3) { animation-delay: 0.36s; }
+
+    @keyframes bounce-dot {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ─── Input area ─── */
+    .input-area {
+      padding: 14px 16px;
+      background: #fff;
+      border-top: 1px solid #eeeef6;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .msg-input {
+      flex: 1;
+      background: #f3f3f9;
+      border: 1.5px solid transparent;
+      border-radius: 100px;
+      padding: 11px 17px;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: #0f0f1e;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .msg-input::placeholder { color: #b8b8cc; }
+
+    .msg-input:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+
+    .send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #6366f1 0%, #5254d8 100%);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.42);
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(99,102,241,0.52);
+    }
+
+    .send-btn:active { transform: scale(0.96); }
+
+    .send-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: #fff;
+      margin-left: 2px;
+    }
+
+    /* ─── Widget footer ─── */
+    .widget-footer {
+      text-align: center;
+      margin-top: 13px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.2px;
+    }
+
+    .widget-footer a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .widget-footer a:hover { color: rgba(255,255,255,0.6); }
+
+    /* ─── Mobile responsive ─── */
+    @media (max-width: 640px) {
+      body {
+        padding: 0;
+        justify-content: flex-start;
+        align-items: stretch;
+        min-height: 100dvh;
+        min-height: 100vh; /* fallback */
+      }
+
+      .chat-widget {
+        max-width: 100%;
+        width: 100%;
+        height: 100dvh;
+        height: 100vh; /* fallback */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-card {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        min-height: 0;
+      }
+
+      /* Chat header — slightly more compact */
+      .chat-header { padding: 14px 16px; }
+      .bot-avatar { width: 40px; height: 40px; border-radius: 12px; }
+      .bot-name { font-size: 14px; }
+
+      /* Messages area — flex-grows to fill available space */
+      .messages-area {
+        flex: 1;
+        height: auto;
+        min-height: 0;
+        padding: 16px 14px;
+        gap: 12px;
+      }
+
+      /* Message bubbles — slightly wider on mobile */
+      .bubble {
+        max-width: 88%;
+        font-size: 14px;
+        padding: 10px 13px;
+      }
+
+      /* Quick reply panel */
+      .qr-panel { padding: 0 12px; }
+      .qr-panel.open { padding: 8px 12px 10px; max-height: 200px; }
+
+      /* Larger, easier-to-tap chips */
+      .qr-chip {
+        padding: 9px 14px;
+        font-size: 13px;
+        border-radius: 18px;
+      }
+
+      /* Input area */
+      .input-area { padding: 10px 12px; gap: 8px; }
+
+      /* Prevent iOS auto-zoom on input focus (requires font-size ≥ 16px) */
+      .msg-input { font-size: 16px; padding: 10px 15px; }
+
+      /* Send button — keep same size */
+      .send-btn { width: 44px; height: 44px; flex-shrink: 0; }
+
+      /* Hide footer on mobile */
+      .widget-footer { display: none; }
+    }
+
+    /* Very small phones (≤360px) */
+    @media (max-width: 360px) {
+      .chat-header { padding: 12px 14px; gap: 10px; }
+      .bot-avatar { width: 36px; height: 36px; }
+      .bubble { font-size: 13.5px; }
+      .qr-chip { padding: 8px 12px; font-size: 12.5px; }
+    }
+
+    /* Landscape phones — reduce message area height to keep input visible */
+    @media (max-width: 900px) and (max-height: 500px) {
+      .messages-area { min-height: 120px; }
+      .qr-panel.open { max-height: 100px; }
+      .qr-chip { padding: 6px 12px; font-size: 12px; }
+      .chat-header { padding: 10px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-widget">
+  <div class="chat-card">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-left">
+        <div class="bot-avatar">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L13.7 8.3H19.3L14.8 11.5L16.5 16.8L12 13.6L7.5 16.8L9.2 11.5L4.7 8.3H10.3L12 3Z" fill="rgba(255,255,255,0.95)"/>
+          </svg>
+        </div>
+        <div class="bot-info">
+          <span class="bot-name" data-en="Request Assistant" data-ru="Помощник по заявкам" data-ko="서비스 도우미">Request Assistant</span>
+          <div class="bot-status">
+            <span class="status-dot"></span>
+            <span class="status-label" data-en="Online · Ready to help" data-ru="В сети · Готов помочь" data-ko="온라인 · 도움 준비 완료">Online · Ready to help</span>
+          </div>
+        </div>
+      </div>
+      <button class="lang-btn" id="langBtn" title="Language">RU</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-area" id="msgArea">
+
+      <div class="msg bot">
+        <div class="bubble"
+          data-en="Hi! I can help you submit or track service requests. Choose an option or type a number:&lt;br&gt;&lt;br&gt;1 — New request&lt;br&gt;2 — Track my request&lt;br&gt;3 — Request callback&lt;br&gt;4 — FAQ"
+          data-ru="Привет! Помогу подать или отследить заявку. Выберите пункт или введите цифру:&lt;br&gt;&lt;br&gt;1 — Подать заявку&lt;br&gt;2 — Отследить заявку&lt;br&gt;3 — Обратный звонок&lt;br&gt;4 — Частые вопросы"
+          data-ko="안녕하세요! 서비스 신청이나 접수 현황 조회를 도와드릴게요. 버튼을 누르거나 번호를 입력하세요:&lt;br&gt;&lt;br&gt;1 — 신규 신청&lt;br&gt;2 — 신청 조회&lt;br&gt;3 — 상담 요청&lt;br&gt;4 — 자주 묻는 질문">
+          Hi! I can help you submit or track service requests. Choose an option or type a number:<br><br>1 — New request<br>2 — Track my request<br>3 — Request callback<br>4 — FAQ
+        </div>
+        <span class="msg-time">now</span>
+      </div>
+
+
+    </div>
+
+    <!-- Quick reply panel — sits between messages and input like a real chatbot keyboard -->
+    <div class="qr-panel" id="qrPanel"></div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <input class="msg-input" id="msgInput" type="text"
+        placeholder="Write a message…"
+        data-en="Write a message…"
+        data-ru="Написать сообщение…"
+        data-ko="메시지를 입력하세요…">
+      <button class="send-btn" id="sendBtn" aria-label="Send">
+        <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+
+  </div>
+  <div class="widget-footer">Powered by <a href="crm.html">Nexus CRM</a></div>
+</div>
+
+<script>
+(function () {
+  const state   = { lang: 'en', step: 'menu', data: {} };
+  const langBtn  = document.getElementById('langBtn');
+  const msgArea  = document.getElementById('msgArea');
+  const qrPanel  = document.getElementById('qrPanel');
+  const msgInput = document.getElementById('msgInput');
+  const sendBtn  = document.getElementById('sendBtn');
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TRANSPORT-AGNOSTIC CORE
+     Flow logic is fully decoupled from presentation.
+     Web buttons are an enhancement — every step also works via typed text.
+     To add SMS/messenger: wire an incoming-message event to routeText().
+  ───────────────────────────────────────────────────────────────────────── */
+
+  /* ── Language ── */
+  function applyLang(l) {
+    state.lang = l;
+    const next = { en: 'RU', ru: 'KO', ko: 'EN' };
+    langBtn.textContent = next[l] || 'RU';
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const val = el.dataset[l] || el.dataset.en;
+      if (!val) return;
+      if (el.tagName === 'INPUT') el.placeholder = val;
+      else if (el.classList.contains('bubble')) el.innerHTML = val;
+      else el.textContent = val;
+    });
+    renderPanel(); // re-label panel chips in new language
+  }
+  langBtn.addEventListener('click', () => {
+    const cycle = { en: 'ru', ru: 'ko', ko: 'en' };
+    applyLang(cycle[state.lang] || 'en');
+  });
+
+  const L  = () => state.lang;
+  const t  = (en, ru, ko) => L() === 'ko' ? (ko || en) : L() === 'ru' ? ru : en;
+  const nl = '<br>';
+
+  /* ── Intent parser ── */
+  function parseIntent(raw, step) {
+    const s = raw.trim().toLowerCase();
+    if (step === 'menu') {
+      if (/^(1|new|submit|new request|новую|подать|заявк|신청|신규)/.test(s))        return 'new';
+      if (/^(2|track|status|find|check|отследить|найти|номер|queue|조회|현황|번호)/.test(s)) return 'track';
+      if (/^(3|callback|call|manager|менеджер|звонок|перезвон|상담|전화|콜백)/.test(s))    return 'callback';
+      if (/^(4|faq|help|помощь|вопрос|질문|도움)/.test(s))                            return 'faq';
+      return null;
+    }
+    if (step === 'new_confirm') {
+      if (/^(yes|y|ok|confirm|submit|да|подтвер|отправ|네|예|확인|제출)/.test(s))          return 'confirm';
+      if (/^(no|n|restart|again|start over|нет|заново|начать|сначала|아니|다시|처음)/.test(s)) return 'restart';
+      return null;
+    }
+    if (['new_email','new_desc','cb_msg'].includes(step)) {
+      if (/^(skip|no|нет|пропустить|-|건너뛰|스킵)$/.test(s)) return 'skip';
+      return null;
+    }
+    if (step === 'faq') {
+      if (/^(1|time|long|process|days|срок|сколько|дней|времен|기간|시간|며칠)/.test(s))  return 'faq_time';
+      if (/^(2|doc|document|какие|документ|서류|문서|필요)/.test(s))                       return 'faq_docs';
+      if (/^(3|pay|payment|price|cost|оплат|цен|стоим|결제|비용|가격)/.test(s))           return 'faq_pay';
+      if (/^(0|back|menu|главн|назад|меню|뒤로|메뉴|돌아)/.test(s))                        return 'faq_back';
+      return null;
+    }
+    return null;
+  }
+
+  /* ── API ── */
+  async function apiPost(url, body) {
+    try {
+      const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      return { ok: r.ok, data: await r.json().catch(() => ({})) };
+    } catch { return { ok: false, data: { error: 'Network error' } }; }
+  }
+  async function apiGet(url) {
+    try {
+      const r = await fetch(url);
+      return { ok: r.ok, data: await r.json().catch(() => ({})) };
+    } catch { return { ok: false, data: { error: 'Network error' } }; }
+  }
+
+  function statusLabel(s) {
+    return {
+      new:         t('New',         'Новая',         '신규'),
+      in_progress: t('In Progress', 'В работе',      '처리 중'),
+      completed:   t('Completed',   'Завершена',      '완료'),
+      incomplete:  t('Incomplete',  'Не завершена',   '미완료'),
+    }[s] || s;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     WEB UI — MESSAGES
+  ───────────────────────────────────────────────────────────────────────── */
+  function nowTime() {
+    const loc = L() === 'ko' ? 'ko-KR' : L() === 'ru' ? 'ru-RU' : 'en-US';
+    return new Date().toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+  function addMsg(who, html) {
+    const d = document.createElement('div');
+    d.className = `msg ${who}`;
+    d.innerHTML = `<div class="bubble">${html}</div><span class="msg-time">${nowTime()}</span>`;
+    msgArea.appendChild(d);
+    msgArea.scrollTop = msgArea.scrollHeight;
+    return d;
+  }
+
+  let typingEl = null;
+  function showTyping() {
+    typingEl = document.createElement('div');
+    typingEl.className = 'msg bot';
+    typingEl.innerHTML = `<div class="typing-wrap"><span></span><span></span><span></span></div>`;
+    msgArea.appendChild(typingEl);
+    msgArea.scrollTop = msgArea.scrollHeight;
+  }
+  function removeTyping() { typingEl?.remove(); typingEl = null; }
+
+  function botReply(fn, delay = 700) {
+    showTyping();
+    setTimeout(() => { removeTyping(); fn(); }, delay + Math.random() * 300);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     WEB UI — QUICK REPLY PANEL
+     A persistent bottom panel that updates per conversational step.
+     Buttons appear here, NOT inside the message bubbles.
+     Tapping a chip posts it as a user message and advances the flow.
+  ───────────────────────────────────────────────────────────────────────── */
+  let _panelOptions  = [];
+  let _panelOnPick   = null;
+
+  function setPanel(options, onPick) {
+    _panelOptions = options || [];
+    _panelOnPick  = onPick  || null;
+    renderPanel();
+  }
+
+  function renderPanel() {
+    qrPanel.innerHTML = '';
+    if (!_panelOptions.length) {
+      qrPanel.classList.remove('open');
+      return;
+    }
+    _panelOptions.forEach(opt => {
+      const b = document.createElement('button');
+      b.className    = 'qr-chip';
+      b.dataset.en   = opt.label_en;
+      b.dataset.ru   = opt.label_ru || opt.label_en;
+      b.dataset.ko   = opt.label_ko || opt.label_en;
+      b.textContent  = opt['label_' + L()] || opt.label_en;
+      b.addEventListener('click', () => {
+        const label   = b.textContent;
+        const handler = _panelOnPick;        // capture before clearing
+        setPanel([], null);
+        addMsg('user', label);
+        botReply(() => handler && handler(opt.value));
+      });
+      qrPanel.appendChild(b);
+    });
+    qrPanel.classList.add('open');
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     FLOW OPTION SETS
+  ───────────────────────────────────────────────────────────────────────── */
+  const MENU_QR = [
+    { label_en: '📋 New request',      label_ru: '📋 Новая заявка',      label_ko: '📋 신규 신청',      value: 'new'      },
+    { label_en: '🔍 Track my request', label_ru: '🔍 Отследить заявку',  label_ko: '🔍 신청 조회',      value: 'track'    },
+    { label_en: '💬 Request callback', label_ru: '💬 Обратный звонок',   label_ko: '💬 상담 요청',      value: 'callback' },
+    { label_en: '❓ FAQ',              label_ru: '❓ Частые вопросы',     label_ko: '❓ 자주 묻는 질문', value: 'faq'      },
+  ];
+
+  const SKIP_QR = [
+    { label_en: 'Skip', label_ru: 'Пропустить', label_ko: '건너뛰기', value: 'skip' },
+  ];
+
+  const CONFIRM_QR = [
+    { label_en: '✅ Yes, submit',  label_ru: '✅ Да, отправить', label_ko: '✅ 제출하기',   value: 'confirm' },
+    { label_en: '✏️ Start over',  label_ru: '✏️ Начать заново', label_ko: '✏️ 다시 입력', value: 'restart' },
+  ];
+
+  const FAQ_QR = [
+    { label_en: '⏱ Processing time',    label_ru: '⏱ Сроки обработки',   label_ko: '⏱ 처리 기간',      value: 'faq_time' },
+    { label_en: '📂 Required documents', label_ru: '📂 Нужные документы', label_ko: '📂 필요 서류',      value: 'faq_docs' },
+    { label_en: '💳 Payment & pricing',  label_ru: '💳 Оплата и цены',    label_ko: '💳 결제 및 요금',   value: 'faq_pay'  },
+    { label_en: '← Back',               label_ru: '← Назад',             label_ko: '← 돌아가기',        value: 'faq_back' },
+  ];
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     FLOWS
+  ───────────────────────────────────────────────────────────────────────── */
+
+  /* ── Main menu ── */
+  function showMainMenu() {
+    state.step = 'menu';
+    state.data = {};
+    addMsg('bot',
+      t('How can I help? Tap a button or type 1 / 2 / 3 / 4.',
+        'Чем могу помочь? Нажмите кнопку или введите 1 / 2 / 3 / 4.',
+        '무엇을 도와드릴까요? 버튼을 누르거나 1 / 2 / 3 / 4를 입력하세요.')
+    );
+    setPanel(MENU_QR, handleMenuAction);
+  }
+
+  function handleMenuAction(value) {
+    if (value === 'new')           startNewRequest();
+    else if (value === 'track')    startTrack();
+    else if (value === 'callback') startCallback();
+    else if (value === 'faq')      showFaq();
+  }
+
+  /* ── New request ── */
+  function startNewRequest() {
+    state.step = 'new_name';
+    state.data = {};
+    setPanel([], null);
+    addMsg('bot', t(
+      "Let's submit a request. What is your full name?",
+      'Оформим заявку. Как вас зовут?',
+      '신청서를 작성합니다. 성함을 입력해 주세요.'
+    ));
+  }
+
+  function handleNewRequest(text) {
+    if (state.step === 'new_name') {
+      state.data.name = text;
+      state.step      = 'new_phone';
+      setPanel([], null);
+      addMsg('bot', t('Your phone number?', 'Ваш номер телефона?', '전화번호를 입력해 주세요.'));
+
+    } else if (state.step === 'new_phone') {
+      state.data.phone = text;
+      state.step       = 'new_email';
+      addMsg('bot', t(
+        'Your email? (type it or tap Skip)',
+        'Ваш email? (напишите или нажмите «Пропустить»)',
+        '이메일 주소를 입력해 주세요. (없으면 건너뛰기)'
+      ));
+      setPanel(SKIP_QR, () => { state.data.email = ''; goToDesc(); });
+
+    } else if (state.step === 'new_email') {
+      state.data.email = text;
+      goToDesc();
+
+    } else if (state.step === 'new_desc') {
+      state.data.comment = text;
+      showConfirm();
+    }
+  }
+
+  function goToDesc() {
+    state.step = 'new_desc';
+    addMsg('bot', t(
+      'Briefly describe your request. (or tap Skip)',
+      'Кратко опишите заявку. (или «Пропустить»)',
+      '신청 내용을 간략히 설명해 주세요. (없으면 건너뛰기)'
+    ));
+    setPanel(SKIP_QR, () => { state.data.comment = ''; showConfirm(); });
+  }
+
+  function showConfirm() {
+    state.step = 'new_confirm';
+    const d = state.data;
+    const lines = [
+      `${t('Name','Имя','이름')}: <b>${d.name}</b>`,
+      `${t('Phone','Телефон','전화번호')}: <b>${d.phone}</b>`,
+      d.email   ? `Email: <b>${d.email}</b>` : '',
+      d.comment ? `${t('Note','Примечание','내용')}: <b>${d.comment.slice(0,80)}${d.comment.length > 80 ? '…' : ''}</b>` : '',
+    ].filter(Boolean).join(nl);
+    addMsg('bot',
+      t('Please confirm:', 'Подтвердите данные:', '정보를 확인해 주세요:') + nl + nl + lines + nl + nl +
+      t('Reply "yes" to submit or "no" to start over.',
+        'Ответьте «да» для отправки или «нет» для повтора.',
+        '제출하려면 "예", 다시 입력하려면 "아니요"를 누르세요.')
+    );
+    setPanel(CONFIRM_QR, v => v === 'confirm' ? submitNewRequest() : startNewRequest());
+  }
+
+  async function submitNewRequest() {
+    setPanel([], null);
+    showTyping();
+    const body = { name: state.data.name, phone: state.data.phone, source: 'bot' };
+    if (state.data.email)   body.email   = state.data.email;
+    if (state.data.comment) body.comment = state.data.comment;
+    const r = await apiPost('/api/intake', body);
+    removeTyping();
+    if (r.ok) {
+      addMsg('bot', t(
+        `✅ Request submitted. Your number: <b>#${r.data.queue_number}</b>. A manager will contact you soon.`,
+        `✅ Заявка принята. Ваш номер: <b>#${r.data.queue_number}</b>. Менеджер свяжется с вами.`,
+        `✅ 신청이 접수되었습니다. 접수 번호: <b>#${r.data.queue_number}</b>. 담당자가 곧 연락드리겠습니다.`
+      ));
+    } else {
+      addMsg('bot', t(
+        `❌ Could not submit: ${r.data.error || 'error'}. Please try again.`,
+        `❌ Ошибка: ${r.data.error || 'ошибка'}. Попробуйте снова.`,
+        `❌ 신청에 실패했습니다: ${r.data.error || '오류'}. 다시 시도해 주세요.`
+      ));
+    }
+    state.step = 'done';
+    setTimeout(showMainMenu, 1400);
+  }
+
+  /* ── Track ── */
+  function startTrack() {
+    state.step = 'track_query';
+    setPanel([], null);
+    addMsg('bot', t(
+      'Enter your queue number (e.g. 5) or the phone you registered with.',
+      'Введите номер в очереди (например, 5) или телефон, с которым подавали заявку.',
+      '접수 번호(예: 5) 또는 등록 시 사용한 전화번호를 입력해 주세요.'
+    ));
+  }
+
+  async function handleTrack(text) {
+    showTyping();
+    const r = await apiGet(`/api/intake/track?q=${encodeURIComponent(text.replace(/^#/, ''))}`);
+    removeTyping();
+    if (!r.ok) {
+      addMsg('bot', r.data.error === 'Not found'
+        ? t('No request found. Check the number or phone and try again.',
+            'Заявка не найдена. Проверьте номер или телефон.',
+            '신청서를 찾을 수 없습니다. 번호 또는 전화번호를 확인해 주세요.')
+        : t('Something went wrong. Please try again.',
+            'Что-то пошло не так. Попробуйте снова.',
+            '오류가 발생했습니다. 다시 시도해 주세요.')
+      );
+      state.step = 'done';
+      setTimeout(showMainMenu, 1400);
+      return;
+    }
+    const a       = r.data;
+    const locale  = L() === 'ko' ? 'ko-KR' : L() === 'ru' ? 'ru-RU' : 'en-US';
+    const created = new Date(a.created_at).toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
+    addMsg('bot',
+      t('Request found:', 'Заявка найдена:', '신청서를 찾았습니다:') + nl + nl +
+      `${t('Queue #', 'Номер', '접수 번호')}: <b>${a.queue_number}</b>` + nl +
+      `${t('Name', 'Имя', '이름')}: <b>${a.name}</b>` + nl +
+      `${t('Status', 'Статус', '상태')}: <b>${statusLabel(a.status)}</b>` + nl +
+      `${t('Submitted', 'Подана', '접수일')}: <b>${created}</b>`
+    );
+    state.step = 'done';
+    setTimeout(showMainMenu, 1600);
+  }
+
+  /* ── Callback ── */
+  function startCallback() {
+    state.step = 'cb_name';
+    state.data = {};
+    setPanel([], null);
+    addMsg('bot', t(
+      "I'll arrange a callback. Your name?",
+      'Организую обратный звонок. Как вас зовут?',
+      '전화 상담을 신청합니다. 성함을 입력해 주세요.'
+    ));
+  }
+
+  function handleCallback(text) {
+    if (state.step === 'cb_name') {
+      state.data.name = text;
+      state.step      = 'cb_phone';
+      setPanel([], null);
+      addMsg('bot', t(
+        'Phone number to call?',
+        'Номер телефона для звонка?',
+        '연락받을 전화번호를 입력해 주세요.'
+      ));
+
+    } else if (state.step === 'cb_phone') {
+      state.data.phone = text;
+      state.step       = 'cb_msg';
+      addMsg('bot', t(
+        'Any message for the manager? (or tap Skip)',
+        'Сообщение для менеджера? (или «Пропустить»)',
+        '담당자에게 전달할 메시지를 입력해 주세요. (없으면 건너뛰기)'
+      ));
+      setPanel(SKIP_QR, () => { state.data.msg = ''; submitCallback(); });
+
+    } else if (state.step === 'cb_msg') {
+      state.data.msg = text;
+      submitCallback();
+    }
+  }
+
+  async function submitCallback() {
+    setPanel([], null);
+    showTyping();
+    const comment = t('Callback request', 'Обратный звонок', '전화 상담 요청') + (state.data.msg ? ': ' + state.data.msg : '');
+    const r = await apiPost('/api/intake', { name: state.data.name, phone: state.data.phone, comment, source: 'bot' });
+    removeTyping();
+    if (r.ok) {
+      addMsg('bot', t(
+        '✅ Noted! A manager will call you back shortly.',
+        '✅ Принято! Менеджер перезвонит вам.',
+        '✅ 접수되었습니다! 담당자가 곧 전화드리겠습니다.'
+      ));
+    } else {
+      addMsg('bot', t(
+        '❌ Something went wrong. Please try again.',
+        '❌ Ошибка. Попробуйте снова.',
+        '❌ 오류가 발생했습니다. 다시 시도해 주세요.'
+      ));
+    }
+    state.step = 'done';
+    setTimeout(showMainMenu, 1400);
+  }
+
+  /* ── FAQ ── */
+  function showFaq() {
+    state.step = 'faq';
+    addMsg('bot',
+      t('FAQ — tap a topic or type 1 / 2 / 3 / 0 to go back.',
+        'Вопросы — нажмите тему или введите 1 / 2 / 3 / 0 для возврата.',
+        '자주 묻는 질문 — 주제를 선택하거나 1 / 2 / 3 / 0으로 돌아가세요.')
+    );
+    setPanel(FAQ_QR, handleFaqAction);
+  }
+
+  function handleFaqAction(value) {
+    if (value === 'faq_back') { showMainMenu(); return; }
+    if (value === 'faq_time') {
+      addMsg('bot', t(
+        'Standard requests: 3–5 business days. Urgent: 1–2 days (additional fee applies).',
+        'Стандартные заявки: 3–5 рабочих дней. Срочно: 1–2 дня (доп. оплата).',
+        '일반 신청: 영업일 기준 3~5일. 긴급 처리: 1~2일 (추가 비용 발생).'
+      ));
+    } else if (value === 'faq_docs') {
+      addMsg('bot', t(
+        'Usually: valid ID, proof of address, relevant certificates. The exact list depends on the service.',
+        'Обычно: удостоверение личности, подтверждение адреса, сертификаты. Список зависит от услуги.',
+        '일반적으로 신분증, 주소 확인 서류, 관련 증명서가 필요합니다. 서비스에 따라 목록이 달라질 수 있습니다.'
+      ));
+    } else if (value === 'faq_pay') {
+      addMsg('bot', t(
+        'We accept bank transfer, card, and cash at the office. Pricing varies by service.',
+        'Принимаем перевод, карту и наличные в офисе. Цены зависят от типа услуги.',
+        '계좌이체, 카드, 현금(창구)으로 결제 가능합니다. 요금은 서비스마다 다릅니다.'
+      ));
+    }
+    state.step = 'done';
+    setTimeout(showMainMenu, 1600);
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     INPUT ROUTER — single entry point for all typed text
+  ───────────────────────────────────────────────────────────────────────── */
+  function routeText(txt) {
+    const step   = state.step;
+    const intent = parseIntent(txt, step);
+
+    if (step === 'menu') {
+      if (intent) handleMenuAction(intent);
+      else addMsg('bot', t('Please type 1, 2, 3, or 4.', 'Введите 1, 2, 3 или 4.', '1, 2, 3 또는 4를 입력해 주세요.'));
+      return;
+    }
+    if (['new_name','new_phone','new_email','new_desc'].includes(step)) {
+      if (intent === 'skip') {
+        if (step === 'new_email') { state.data.email   = ''; goToDesc(); }
+        else                      { state.data.comment = ''; showConfirm(); }
+      } else { handleNewRequest(txt); }
+      return;
+    }
+    if (step === 'new_confirm') {
+      if (intent === 'confirm')      submitNewRequest();
+      else if (intent === 'restart') startNewRequest();
+      else addMsg('bot', t('Reply "yes" to submit or "no" to start over.', 'Ответьте «да» или «нет».', '"예" 또는 "아니요"를 입력해 주세요.'));
+      return;
+    }
+    if (step === 'track_query') { handleTrack(txt); return; }
+    if (['cb_name','cb_phone','cb_msg'].includes(step)) {
+      if (intent === 'skip') { state.data.msg = ''; submitCallback(); }
+      else handleCallback(txt);
+      return;
+    }
+    if (step === 'faq') {
+      if (intent) handleFaqAction(intent);
+      else addMsg('bot', t('Type 1, 2, 3, or 0 to go back.', 'Введите 1, 2, 3 или 0.', '1, 2, 3 또는 0을 입력해 주세요.'));
+      return;
+    }
+    addMsg('bot', t('Got it. A specialist will be in touch.', 'Принято. Специалист свяжется с вами.', '확인했습니다. 담당자가 곧 연락드리겠습니다.'));
+    setTimeout(showMainMenu, 1200);
+  }
+
+  /* ── Text input ── */
+  function send() {
+    const txt = msgInput.value.trim();
+    if (!txt) return;
+    addMsg('user', txt);
+    msgInput.value = '';
+    showTyping();
+    setTimeout(() => { removeTyping(); routeText(txt); }, 700 + Math.random() * 300);
+  }
+  sendBtn.addEventListener('click', send);
+  msgInput.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+  /* ── Init ── */
+  setPanel(MENU_QR, handleMenuAction);
+})();
+</script>
+</body>
+</html>
