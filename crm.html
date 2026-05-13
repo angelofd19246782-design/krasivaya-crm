@@ -236,7 +236,7 @@
         <!-- ════════ ASYMMETRIC GRID: Distribution + Side stack ════════ -->
         <section class="ops-grid-asym">
           <div class="ops-dist-panel">
-            <!-- Top row: Donut centerpiece + status legend -->
+            <!-- Top row: Donut centerpiece + status legend + live side stack -->
             <div class="odp-row-top">
               <div class="odp-donut-wrap">
                 <canvas id="donutChart"></canvas>
@@ -268,6 +268,44 @@
                   <div class="legend-item">
                     <div class="legend-left"><span class="legend-dot" style="background:#f43f5e;color:#f43f5e"></span><span class="legend-label" data-en="Incomplete" data-ru="Не завершена" data-ko="미완료">Incomplete</span></div>
                     <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barIncomplete" style="width:0%"></div></div><span class="legend-pct" id="legendIncompletePct">—</span><span class="legend-val" id="legendIncomplete">—</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live side stack — Velocity + Signal Flow waveform -->
+              <div class="odp-side-stack">
+                <div class="odp-side-mod odp-velocity-mod">
+                  <div class="odp-side-label" data-en="VELOCITY · 14D AVG" data-ru="СКОРОСТЬ · 14Д СРЕДНЕЕ" data-ko="속도 · 14일 평균">VELOCITY · 14D AVG</div>
+                  <div class="odp-vel-line">
+                    <span class="odp-vel-val" id="odpVelVal">—</span>
+                    <span class="odp-vel-unit" data-en="/day" data-ru="/день" data-ko="/일">/day</span>
+                    <span class="odp-vel-trend flat" id="odpVelTrend">—</span>
+                  </div>
+                </div>
+
+                <div class="odp-side-mod odp-waveform-mod">
+                  <div class="odp-side-label live" data-en="SIGNAL FLOW · LIVE" data-ru="ПОТОК СИГНАЛОВ · LIVE" data-ko="신호 흐름 · 라이브">SIGNAL FLOW · LIVE</div>
+                  <div class="odp-wave-canvas">
+                    <svg class="odp-wave-svg" viewBox="0 0 200 56" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="odpWaveStrokeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#6366f1"/>
+                          <stop offset="55%" stop-color="#818cf8"/>
+                          <stop offset="100%" stop-color="#c084fc"/>
+                        </linearGradient>
+                        <linearGradient id="odpWaveFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="rgba(129,140,248,0.42)"/>
+                          <stop offset="100%" stop-color="rgba(129,140,248,0)"/>
+                        </linearGradient>
+                      </defs>
+                      <path id="odpWaveFillPath" d="" fill="url(#odpWaveFillGrad)"/>
+                      <path id="odpWaveStrokePath" d="" class="odp-wave-stroke" stroke="url(#odpWaveStrokeGrad)"/>
+                    </svg>
+                    <div class="odp-wave-scan"></div>
+                  </div>
+                  <div class="odp-wave-foot">
+                    <span data-en="21D" data-ru="21Д" data-ko="21일">21D</span>
+                    <span>PEAK <strong id="odpWavePeak">—</strong></span>
                   </div>
                 </div>
               </div>
@@ -1577,6 +1615,59 @@
         peakEl.innerHTML = `${peakLbl} <strong>${max}</strong>`;
       }
     }
+
+    // ─── Side-stack module 1: Velocity (14-day avg) + week-over-week trend ───
+    const last14 = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      last14.push(dayMap[d.toISOString().slice(0, 10)] || 0);
+    }
+    const avg14 = last14.reduce((a, b) => a + b, 0) / 14;
+    setText('odpVelVal', avg14 >= 10 ? avg14.toFixed(0) : avg14.toFixed(1));
+
+    const last7Sum = last14.slice(7).reduce((a, b) => a + b, 0);
+    const prev7Sum = last14.slice(0, 7).reduce((a, b) => a + b, 0);
+    const velEl = document.getElementById('odpVelTrend');
+    if (velEl) {
+      if (prev7Sum > 0) {
+        const delta = Math.round((last7Sum - prev7Sum) / prev7Sum * 100);
+        const cls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+        const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
+        const lbl = L.lang === 'ru' ? 'нед' : L.lang === 'ko' ? '주' : 'wk';
+        velEl.className = 'odp-vel-trend ' + cls;
+        velEl.textContent = `${arrow} ${delta > 0 ? '+' : ''}${delta}% ${lbl}`;
+      } else {
+        velEl.className = 'odp-vel-trend flat';
+        velEl.textContent = '— wk';
+      }
+    }
+
+    // ─── Side-stack module 2: Signal Flow waveform (smooth SVG, 21 days) ───
+    const last21 = [];
+    for (let i = 20; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      last21.push(dayMap[d.toISOString().slice(0, 10)] || 0);
+    }
+    const maxWave = Math.max(...last21, 1);
+    const W = 200, H = 56, padY = 6;
+    const points = last21.map((v, i) => ({
+      x: (i / (last21.length - 1)) * W,
+      y: H - padY - (v / maxWave) * (H - padY * 2),
+    }));
+    // Smooth cubic-bezier path through points (gentle curve through each)
+    let stroke = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+    for (let i = 1; i < points.length; i++) {
+      const p0 = points[i - 1];
+      const p1 = points[i];
+      const dx = p1.x - p0.x;
+      const cp1x = (p0.x + dx / 3).toFixed(1);
+      const cp2x = (p0.x + dx * 2 / 3).toFixed(1);
+      stroke += ` C ${cp1x} ${p0.y.toFixed(1)} ${cp2x} ${p1.y.toFixed(1)} ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`;
+    }
+    const fill = stroke + ` L ${W} ${H} L 0 ${H} Z`;
+    document.getElementById('odpWaveStrokePath')?.setAttribute('d', stroke);
+    document.getElementById('odpWaveFillPath')?.setAttribute('d', fill);
+    setText('odpWavePeak', maxWave);
   }
 
   // ─── Primary metric sparkline (in hero) ───

@@ -3244,11 +3244,11 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 }
 
-/* Top row: donut centerpiece + status legend */
+/* Top row: donut centerpiece + status legend + live side stack */
 .odp-row-top {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
+  grid-template-columns: 220px 1fr 240px;
+  gap: 22px;
   padding: 6px 0 20px;
   border-bottom: 1px dashed var(--line);
   align-items: center;
@@ -3261,6 +3261,184 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Right column — vertical stack of live analytics */
+.odp-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: stretch;
+  height: 200px;
+}
+
+.odp-side-mod {
+  position: relative;
+  padding: 11px 14px 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  overflow: hidden;
+}
+.odp-side-mod:hover {
+  border-color: rgba(129, 140, 248, 0.30);
+  background: rgba(255, 255, 255, 0.038);
+}
+.odp-side-mod::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.32), transparent);
+  pointer-events: none;
+}
+
+.odp-side-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 1.3px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+.odp-side-label::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--indigo-2);
+  box-shadow: 0 0 5px var(--indigo-2);
+}
+.odp-side-label.live::before {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+/* Velocity module — compact metric pill */
+.odp-velocity-mod { flex-shrink: 0; }
+.odp-vel-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.odp-vel-val {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  background: linear-gradient(180deg, #fff 0%, rgba(199, 210, 254, 0.82) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.odp-vel-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--t3);
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.odp-vel-trend {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.2px;
+}
+.odp-vel-trend.up   { color: #34d399; }
+.odp-vel-trend.down { color: #fb7185; }
+.odp-vel-trend.flat { color: var(--t3); }
+
+/* Signal flow waveform — fills remaining vertical space */
+.odp-waveform-mod {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.odp-wave-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 50px;
+  display: block;
+}
+.odp-wave-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.odp-wave-stroke {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  animation: waveGlow 6s ease-in-out infinite;
+}
+@keyframes waveGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(129, 140, 248, 0.35)); }
+  50%      { filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.55)); }
+}
+
+/* Vertical scan line that travels across the waveform */
+.odp-wave-scan {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 1.5px;
+  background: linear-gradient(to bottom, transparent, rgba(199, 210, 254, 0.65), transparent);
+  box-shadow: 0 0 6px rgba(199, 210, 254, 0.5);
+  pointer-events: none;
+  animation: waveScan 5.5s ease-in-out infinite;
+}
+@keyframes waveScan {
+  0%   { left: 0%;   opacity: 0; }
+  10%  { opacity: 0.75; }
+  90%  { opacity: 0.75; }
+  100% { left: 100%; opacity: 0; }
+}
+
+.odp-wave-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+.odp-wave-foot strong {
+  color: var(--indigo-2);
+  font-weight: 700;
+}
+
+/* Responsive: drop side stack below at narrow viewports */
+@media (max-width: 1280px) {
+  .odp-row-top { grid-template-columns: 200px 1fr; }
+  .odp-side-stack {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    height: auto;
+    margin-top: 8px;
+  }
+  .odp-velocity-mod { flex: 1; }
+  .odp-waveform-mod { flex: 2; min-height: 90px; }
+}
+@media (max-width: 700px) {
+  .odp-side-stack { flex-direction: column; }
+  .odp-waveform-mod { min-height: 80px; }
 }
 
 .odp-legend { display: flex; flex-direction: column; gap: 4px; }
