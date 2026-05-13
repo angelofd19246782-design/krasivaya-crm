@@ -128,25 +128,91 @@ body::before {
   flex-shrink: 0;
 }
 
+/* ─── PULSAR brand mark — orbital rings around glowing core ─── */
 .logo-mark {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 11px;
+  position: relative;
+  flex-shrink: 0;
   background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18) 0%, transparent 50%),
-    linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #a855f7 100%);
+    radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.22) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(14, 16, 30, 0.95) 0%, rgba(22, 25, 42, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  border: 1px solid rgba(129, 140, 248, 0.32);
   box-shadow:
-    0 4px 16px rgba(99, 102, 241, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 6px 20px rgba(99, 102, 241, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.logo-mark::before {
+  /* outer aura */
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 11px;
+  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.lm-core {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c7d2fe 0%, #a855f7 100%);
+  box-shadow:
+    0 0 14px rgba(168, 85, 247, 0.95),
+    0 0 6px rgba(255, 255, 255, 0.7),
+    inset 0 0 2px rgba(255, 255, 255, 0.8);
+  z-index: 3;
+  animation: lm-core-pulse 2.6s ease-in-out infinite;
+}
+@keyframes lm-core-pulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(168, 85, 247, 0.95), 0 0 6px rgba(255, 255, 255, 0.7), inset 0 0 2px rgba(255, 255, 255, 0.8); }
+  50%      { box-shadow: 0 0 20px rgba(168, 85, 247, 1), 0 0 10px rgba(199, 210, 254, 0.9), inset 0 0 3px rgba(255, 255, 255, 1); }
+}
+.lm-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.lm-ring-1 { width: 14px; height: 14px; border: 1px solid rgba(199, 210, 254, 0.6); box-shadow: 0 0 8px rgba(129, 140, 248, 0.45) inset, 0 0 6px rgba(129, 140, 248, 0.3); }
+.lm-ring-2 { width: 22px; height: 22px; border: 1px solid rgba(129, 140, 248, 0.32); }
+.lm-ring-3 {
+  width: 30px;
+  height: 30px;
+  border: 1px dashed rgba(168, 85, 247, 0.45);
+  animation: lm-ring-spin 9s linear infinite;
+}
+@keyframes lm-ring-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-.logo-text { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.5px; line-height: 1.1; }
-.logo-sub  { font-size: 9.5px; font-weight: 700; color: var(--t3); letter-spacing: 1.4px; margin-top: 2px; text-transform: uppercase; }
+.logo-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.4px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(199, 210, 254, 0.92) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.logo-sub {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--t3);
+  letter-spacing: 1.6px;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
 
 .sb-nav {
   flex: 1;
@@ -506,40 +572,110 @@ body::before {
   animation: heroIn 0.55s var(--ease) both;
   position: relative;
   border-radius: 22px;
-  padding: 30px 34px;
+  padding: 32px 36px;
   margin-bottom: 22px;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 30px;
   align-items: stretch;
   background:
-    linear-gradient(135deg, rgba(99, 102, 241, 0.10) 0%, rgba(139, 92, 246, 0.04) 50%, rgba(6, 7, 13, 0) 100%),
-    linear-gradient(180deg, rgba(20, 22, 40, 0.85) 0%, rgba(12, 14, 26, 0.85) 100%);
+    /* Grid texture — subtle CRT-like overlay */
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0/40px 40px,
+    /* Glow tint layer */
+    linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(6, 7, 13, 0) 100%),
+    /* Base */
+    linear-gradient(180deg, rgba(20, 22, 40, 0.88) 0%, rgba(12, 14, 26, 0.88) 100%);
   border: 1px solid var(--line);
   overflow: hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 16px 48px rgba(0, 0, 0, 0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.55);
 }
 .dash-hero::before {
+  /* Right-side violet orb */
   content: '';
   position: absolute;
   top: -40%;
   right: -10%;
   width: 60%;
   height: 200%;
-  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.18) 0%, transparent 60%);
+  background: radial-gradient(ellipse, rgba(168, 85, 247, 0.22) 0%, transparent 62%);
   pointer-events: none;
 }
 .dash-hero::after {
+  /* Bottom indigo orb */
   content: '';
   position: absolute;
   bottom: -50%;
-  left: 30%;
+  left: 28%;
   width: 45%;
   height: 160%;
-  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.14) 0%, transparent 60%);
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.18) 0%, transparent 62%);
   pointer-events: none;
+}
+
+/* Session badge — sits at top of hero left column */
+.hero-session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line-s);
+  border-radius: 100px;
+  padding: 5px 12px 5px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--t3);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  width: fit-content;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+.hero-session-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--st-completed);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 0 0 12px var(--st-completed);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.hero-session-badge .hsb-divider {
+  color: rgba(255, 255, 255, 0.18);
+  font-weight: 400;
+}
+.hero-session-badge .hsb-brand {
+  color: var(--indigo-2);
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+/* Animated orbital dots floating in hero background */
+.hero-orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.7;
+}
+.hero-orb {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #818cf8;
+  box-shadow: 0 0 12px #818cf8, 0 0 4px #fff;
+}
+.hero-orb.orb-1 { top: 24%; left: 38%; animation: orb-float 7s ease-in-out infinite; }
+.hero-orb.orb-2 { top: 68%; left: 22%; animation: orb-float 9s ease-in-out infinite 1.5s; background: #c084fc; box-shadow: 0 0 12px #c084fc; }
+.hero-orb.orb-3 { top: 38%; left: 56%; width: 3px; height: 3px; animation: orb-float 11s ease-in-out infinite 0.8s; }
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+  50%      { transform: translate(14px, -10px); opacity: 1; }
 }
 
 .dash-hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; }

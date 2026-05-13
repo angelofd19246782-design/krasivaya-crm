@@ -69,7 +69,7 @@ app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(session({
   store:             new SQLiteStore(),
   name:              'nxsid',
-  secret:            process.env.SESSION_SECRET || 'nexus-dev-secret-change-in-production',
+  secret:            process.env.SESSION_SECRET || 'pulsar-dev-secret-change-in-production',
   resave:            false,
   saveUninitialized: false,
   cookie: {
@@ -173,8 +173,8 @@ app.use((err, req, res, next) => {
 // ─── Start ────────────────────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
-  console.log(`\n🚀  Nexus CRM running on http://localhost:${PORT}`);
-  console.log(`   CRM panel  →  http://localhost:${PORT}/crm.html`);
-  console.log(`   Bot widget →  http://localhost:${PORT}/index.html`);
-  console.log(`   Login      →  http://localhost:${PORT}/login\n`);
+  console.log(`\n◉  PULSAR — Control Platform online at http://localhost:${PORT}`);
+  console.log(`   Mission Control  →  http://localhost:${PORT}/crm.html`);
+  console.log(`   Intake gateway   →  http://localhost:${PORT}/index.html`);
+  console.log(`   Console login    →  http://localhost:${PORT}/login\n`);
 });

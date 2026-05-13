@@ -3,197 +3,410 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus CRM — Sign In</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='16' y='23' font-size='20' font-weight='900' text-anchor='middle' fill='white' font-family='system-ui,sans-serif'>N</text></svg>">
+  <title>PULSAR — Enter Console</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><radialGradient id='g' cx='50%25' cy='50%25'><stop offset='0%25' stop-color='%23c084fc'/><stop offset='100%25' stop-color='%236366f1'/></radialGradient></defs><rect width='32' height='32' rx='8' fill='%230e1120'/><circle cx='16' cy='16' r='3.5' fill='url(%23g)'/><circle cx='16' cy='16' r='7' stroke='%23818cf8' stroke-opacity='0.55' stroke-width='1' fill='none'/><circle cx='16' cy='16' r='11' stroke='%23a855f7' stroke-opacity='0.32' stroke-width='1' fill='none' stroke-dasharray='2 2'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --indigo: #6366f1;
+      --indigo-2: #818cf8;
+      --violet: #8b5cf6;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --t1: rgba(255, 255, 255, 0.96);
+      --t2: rgba(255, 255, 255, 0.68);
+      --t3: rgba(255, 255, 255, 0.44);
+      --line: rgba(255, 255, 255, 0.07);
+      --line-s: rgba(255, 255, 255, 0.10);
+      --raised: rgba(255, 255, 255, 0.025);
+      --raised-h: rgba(255, 255, 255, 0.05);
+    }
+
     body {
       font-family: 'Inter', -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background:
-        radial-gradient(ellipse 70% 55% at 20% 35%, rgba(99,102,241,0.13) 0%, transparent 65%),
-        radial-gradient(ellipse 55% 55% at 78% 65%, rgba(139,92,246,0.08) 0%, transparent 65%),
-        #0d0d1b;
+      background: #0a0c14;
+      color: var(--t1);
+      position: relative;
+      overflow: hidden;
     }
 
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 55% at 22% 30%, rgba(99, 102, 241, 0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 75%, rgba(168, 85, 247, 0.16) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 50%, transparent 0%, rgba(6, 7, 13, 0.6) 100%);
+    }
+
+    /* Subtle grid texture overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px) 0 0/48px 48px,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px) 0 0/48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 30%, transparent 80%);
+    }
+
+    /* Floating orbital dots */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(0.5px);
+    }
+    .orb.o1 { width: 5px; height: 5px; top: 22%; left: 16%; background: #818cf8; box-shadow: 0 0 12px #818cf8; animation: float1 9s ease-in-out infinite; }
+    .orb.o2 { width: 4px; height: 4px; top: 70%; left: 78%; background: #c084fc; box-shadow: 0 0 12px #c084fc; animation: float2 11s ease-in-out infinite 1.4s; }
+    .orb.o3 { width: 3px; height: 3px; top: 40%; left: 85%; background: #fff; box-shadow: 0 0 10px #fff; animation: float1 14s ease-in-out infinite 0.6s; }
+    .orb.o4 { width: 4px; height: 4px; top: 80%; left: 12%; background: #22d3ee; box-shadow: 0 0 10px #22d3ee; animation: float2 13s ease-in-out infinite 2.2s; }
+    @keyframes float1 { 0%,100% { transform: translate(0,0); opacity: 0.6; } 50% { transform: translate(20px,-14px); opacity: 1; } }
+    @keyframes float2 { 0%,100% { transform: translate(0,0); opacity: 0.5; } 50% { transform: translate(-18px,12px); opacity: 0.9; } }
+
     .card {
-      background: #ffffff;
+      position: relative;
+      background: linear-gradient(180deg, rgba(22, 25, 42, 0.92) 0%, rgba(14, 16, 30, 0.92) 100%);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid var(--line-s);
       border-radius: 22px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       overflow: hidden;
       box-shadow:
-        0 0 0 1px rgba(255,255,255,0.06),
-        0 30px 80px rgba(0,0,0,0.65),
-        0 8px 20px rgba(0,0,0,0.35);
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 30px 80px rgba(0, 0, 0, 0.65),
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      z-index: 1;
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.55) 50%, transparent);
+      pointer-events: none;
     }
 
     .card-top {
-      background: linear-gradient(150deg, #0f0f21 0%, #14142f 100%);
-      padding: 32px 32px 28px;
+      padding: 36px 36px 28px;
       text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 0%, rgba(99, 102, 241, 0.10) 0%, transparent 70%);
     }
 
     .logo {
       display: inline-flex;
       align-items: center;
-      gap: 11px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 22px;
     }
 
+    /* PULSAR brand mark — orbital rings around glowing core */
     .logo-mark {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
-      background: linear-gradient(145deg, #6366f1 0%, #8b5cf6 100%);
+      position: relative;
+      flex-shrink: 0;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.22) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(14, 16, 30, 0.95) 0%, rgba(22, 25, 42, 0.95) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(99,102,241,0.45);
+      border: 1px solid rgba(129, 140, 248, 0.32);
+      box-shadow:
+        0 6px 20px rgba(99, 102, 241, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
     }
+    .lm-core {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c7d2fe 0%, #a855f7 100%);
+      box-shadow:
+        0 0 16px rgba(168, 85, 247, 0.95),
+        0 0 8px rgba(255, 255, 255, 0.7),
+        inset 0 0 2px rgba(255, 255, 255, 0.8);
+      z-index: 3;
+      animation: corePulse 2.6s ease-in-out infinite;
+    }
+    @keyframes corePulse {
+      0%, 100% { box-shadow: 0 0 16px rgba(168, 85, 247, 0.95), 0 0 8px rgba(255, 255, 255, 0.7), inset 0 0 2px rgba(255, 255, 255, 0.8); }
+      50%      { box-shadow: 0 0 22px rgba(168, 85, 247, 1), 0 0 12px rgba(199, 210, 254, 0.9), inset 0 0 3px rgba(255, 255, 255, 1); }
+    }
+    .lm-ring {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .lm-ring.r1 { width: 16px; height: 16px; border: 1px solid rgba(199, 210, 254, 0.6); }
+    .lm-ring.r2 { width: 24px; height: 24px; border: 1px solid rgba(129, 140, 248, 0.32); }
+    .lm-ring.r3 {
+      width: 34px; height: 34px;
+      border: 1px dashed rgba(168, 85, 247, 0.45);
+      animation: ringSpin 9s linear infinite;
+    }
+    @keyframes ringSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
+    .logo-text-wrap { text-align: left; }
     .logo-text {
       font-size: 18px;
       font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      line-height: 1;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(199, 210, 254, 0.92) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-sub {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--t3);
+      letter-spacing: 1.6px;
+      margin-top: 4px;
+      text-transform: uppercase;
     }
 
     .card-top h1 {
       font-size: 22px;
       font-weight: 800;
-      color: #fff;
+      color: var(--t1);
       letter-spacing: -0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.78) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .card-top p {
       font-size: 13px;
-      color: rgba(255,255,255,0.4);
-      font-weight: 400;
+      color: var(--t3);
+      font-weight: 500;
+      letter-spacing: 0.1px;
     }
 
-    .card-body {
-      padding: 30px 32px 32px;
+    .session-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--raised);
+      border: 1px solid var(--line-s);
+      border-radius: 100px;
+      padding: 4px 11px 4px 9px;
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--t3);
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .session-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 0 0 10px #10b981;
+      animation: dotPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18), 0 0 8px #10b981; }
+      50%      { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.08), 0 0 16px #10b981; }
     }
 
-    .field {
-      margin-bottom: 16px;
-    }
+    .card-body { padding: 30px 36px 32px; }
+
+    .field { margin-bottom: 16px; }
 
     label {
       display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #5a5a78;
-      letter-spacing: 0.3px;
-      margin-bottom: 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--t3);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     input {
       width: 100%;
-      background: #f4f4f9;
-      border: 1.5px solid transparent;
+      background: var(--raised);
+      border: 1px solid var(--line);
       border-radius: 10px;
       padding: 12px 15px;
       font-family: inherit;
       font-size: 14px;
-      color: #0f0f1e;
+      color: var(--t1);
       outline: none;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      transition: border-color 0.18s var(--ease), background 0.18s var(--ease), box-shadow 0.18s var(--ease);
     }
 
-    input::placeholder { color: #b8b8cc; }
+    input::placeholder { color: var(--t3); }
 
     input:focus {
-      background: #fff;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(129, 140, 248, 0.5);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
     }
 
     .error-msg {
       display: none;
-      background: #fff1f1;
-      border: 1px solid #fecaca;
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px solid rgba(244, 63, 94, 0.25);
       border-radius: 9px;
       padding: 10px 14px;
       font-size: 12.5px;
-      color: #b91c1c;
+      color: #fb7185;
       margin-bottom: 16px;
       font-weight: 500;
     }
-
     .error-msg.visible { display: block; }
 
     .btn {
       width: 100%;
-      height: 46px;
-      background: linear-gradient(135deg, #6366f1 0%, #5254d8 100%);
+      height: 48px;
+      background: linear-gradient(135deg, #6366f1 0%, #5b54e0 50%, #7c5af0 100%);
       color: #fff;
       border: none;
       border-radius: 12px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(99,102,241,0.38);
-      transition: transform 0.17s, box-shadow 0.17s, opacity 0.17s;
-      letter-spacing: -0.1px;
-      margin-top: 4px;
+      box-shadow:
+        0 4px 14px rgba(99, 102, 241, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease), filter 0.18s var(--ease);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
     }
-
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.48); }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+      transform: translateX(-110%);
+      transition: transform 0.7s var(--ease);
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(99, 102, 241, 0.55); filter: brightness(1.05); }
+    .btn:hover::before { transform: translateX(110%); }
     .btn:active { transform: scale(0.99); }
     .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
+    .btn-arrow {
+      display: inline-block;
+      margin-left: 8px;
+      transition: transform 0.18s var(--ease);
+    }
+    .btn:hover .btn-arrow { transform: translateX(3px); }
+
     .footer-note {
       text-align: center;
-      margin-top: 14px;
-      font-size: 11.5px;
-      color: #b0b0c8;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      font-size: 11px;
+      color: var(--t3);
+      letter-spacing: 0.3px;
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
     }
+    .footer-note strong { color: var(--t2); font-weight: 700; }
+    .footer-note-sep { color: rgba(255, 255, 255, 0.18); margin: 0 6px; }
 
     .spinner {
       display: none;
       width: 18px; height: 18px;
-      border: 2.5px solid rgba(255,255,255,0.3);
+      border: 2.5px solid rgba(255, 255, 255, 0.3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       margin: 0 auto;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .btn.loading .btn-text { display: none; }
     .btn.loading .spinner  { display: block; }
+
+    /* Brand footer below card */
+    .brand-footer {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--t3);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+    }
+    .brand-footer .bf-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
 
+<span class="orb o1"></span>
+<span class="orb o2"></span>
+<span class="orb o3"></span>
+<span class="orb o4"></span>
+
 <div class="card">
   <div class="card-top">
     <div class="logo">
-      <div class="logo-mark">
-        <svg width="19" height="19" viewBox="0 0 17 17" fill="none">
-          <rect width="7.5" height="7.5" rx="2" fill="white"/>
-          <rect x="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
-          <rect y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
-          <rect x="9.5" y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.35)"/>
-        </svg>
+      <div class="logo-mark" aria-hidden="true">
+        <span class="lm-ring r3"></span>
+        <span class="lm-ring r2"></span>
+        <span class="lm-ring r1"></span>
+        <span class="lm-core"></span>
       </div>
-      <span class="logo-text">Nexus CRM</span>
+      <div class="logo-text-wrap">
+        <div class="logo-text">PULSAR</div>
+        <div class="logo-sub">CONTROL PLATFORM</div>
+      </div>
     </div>
-    <h1>Welcome back</h1>
-    <p>Sign in to your workspace</p>
+    <div class="session-tag">
+      <span>SECURE · CONSOLE GATEWAY</span>
+    </div>
+    <h1>Enter the console</h1>
+    <p>Authenticate to access mission control</p>
   </div>
 
   <div class="card-body">
@@ -201,23 +414,31 @@
 
     <form id="loginForm">
       <div class="field">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+        <label for="username">Operator ID</label>
+        <input type="text" id="username" name="username" placeholder="Your username" autocomplete="username" required>
       </div>
       <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <label for="password">Access key</label>
+        <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required>
       </div>
       <button type="submit" class="btn" id="submitBtn">
-        <span class="btn-text">Sign In</span>
+        <span class="btn-text">Authenticate<span class="btn-arrow">→</span></span>
         <div class="spinner"></div>
       </button>
     </form>
 
     <div class="footer-note">
-      Demo: <strong>admin</strong> / admin123 &nbsp;·&nbsp; <strong>employee</strong> / employee123
+      <strong>admin</strong> / admin123 <span class="footer-note-sep">·</span> <strong>employee</strong> / employee123
     </div>
   </div>
+</div>
+
+<div class="brand-footer">
+  <span>PULSAR</span>
+  <span class="bf-dot"></span>
+  <span>v1.0 · CONTROL PLATFORM</span>
+  <span class="bf-dot"></span>
+  <span>SECURE GATEWAY</span>
 </div>
 
 <script>
@@ -242,12 +463,12 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     const data = await res.json();
 
     if (!res.ok) {
-      errEl.textContent = data.error || 'Login failed';
+      errEl.textContent = data.error || 'Authentication failed';
       errEl.classList.add('visible');
       return;
     }
 
-    window.location.href = data.user.role === 'admin' ? '/crm.html' : '/crm.html';
+    window.location.href = '/crm.html';
   } catch {
     errEl.textContent = 'Network error. Please try again.';
     errEl.classList.add('visible');

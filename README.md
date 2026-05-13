@@ -1,6 +1,8 @@
-# Nexus CRM
+# PULSAR
 
-Full-featured CRM system with Telegram bot integration. Single-file frontend, Node.js backend, SQLite database.
+**Premium operations console for client signals, documents, and team coordination.**
+
+A control-plane CRM with mission-control UX, real-time analytics, and Telegram bot integration. Vanilla HTML/CSS/JS frontend, Node.js + Express backend, SQLite storage.
 
 ## Quick Start
 

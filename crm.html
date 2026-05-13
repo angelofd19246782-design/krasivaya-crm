@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus CRM — Dashboard</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236366f1'/><text x='16' y='23' font-size='20' font-weight='900' text-anchor='middle' fill='white' font-family='system-ui,sans-serif'>N</text></svg>">
+  <title>PULSAR — Mission Control</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><radialGradient id='g' cx='50%25' cy='50%25'><stop offset='0%25' stop-color='%23c084fc'/><stop offset='100%25' stop-color='%236366f1'/></radialGradient></defs><rect width='32' height='32' rx='8' fill='%230e1120'/><circle cx='16' cy='16' r='3.5' fill='url(%23g)'/><circle cx='16' cy='16' r='7' stroke='%23818cf8' stroke-opacity='0.55' stroke-width='1' fill='none'/><circle cx='16' cy='16' r='11' stroke='%23a855f7' stroke-opacity='0.32' stroke-width='1' fill='none' stroke-dasharray='2 2'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,21 +20,21 @@
   <!-- ─── Sidebar ─── -->
   <aside class="sidebar">
     <div class="sb-logo">
-      <div class="logo-mark">
-        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-          <rect width="7.5" height="7.5" rx="2" fill="white"/>
-          <rect x="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
-          <rect y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.6)"/>
-          <rect x="9.5" y="9.5" width="7.5" height="7.5" rx="2" fill="rgba(255,255,255,0.35)"/>
-        </svg>
+      <div class="logo-mark" aria-hidden="true">
+        <span class="lm-ring lm-ring-3"></span>
+        <span class="lm-ring lm-ring-2"></span>
+        <span class="lm-ring lm-ring-1"></span>
+        <span class="lm-core"></span>
       </div>
       <div>
-        <div class="logo-text">Nexus</div>
-        <div class="logo-sub">CRM PLATFORM</div>
+        <div class="logo-text">PULSAR</div>
+        <div class="logo-sub">CONTROL PLATFORM</div>
       </div>
     </div>
 
     <nav class="sb-nav">
+      <div class="nav-section" data-en="Operations" data-ru="Операции" data-ko="운영">Operations</div>
+
       <a class="nav-item active" data-view="dashboard" href="#">
         <svg class="nav-ic" viewBox="0 0 20 20" fill="currentColor">
           <rect x="1" y="1" width="7.5" height="7.5" rx="1.5"/>
@@ -42,30 +42,31 @@
           <rect x="1" y="11.5" width="7.5" height="7.5" rx="1.5"/>
           <rect x="11.5" y="11.5" width="7.5" height="7.5" rx="1.5"/>
         </svg>
-        <span data-en="Dashboard" data-ru="Дашборд" data-ko="대시보드">Dashboard</span>
+        <span data-en="Mission Control" data-ru="Центр управления" data-ko="미션 컨트롤">Mission Control</span>
       </a>
       <a class="nav-item" data-view="requests" href="#">
         <svg class="nav-ic" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-.293.707L13 10.414V17a1 1 0 01-1.447.894l-4-2A1 1 0 017 15v-4.586L3.293 6.707A1 1 0 013 6V4z"/>
+          <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd"/>
         </svg>
-        <span data-en="Requests" data-ru="Заявки" data-ko="신청 목록">Requests</span>
+        <span data-en="Request Flow" data-ru="Поток заявок" data-ko="요청 흐름">Request Flow</span>
         <span class="nav-badge" id="navBadgeNew">0</span>
       </a>
       <a class="nav-item" data-view="trash" href="#" data-admin-only>
         <svg class="nav-ic" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+          <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
         </svg>
-        <span data-en="Trash" data-ru="Корзина" data-ko="휴지통">Trash</span>
+        <span data-en="Archive Vault" data-ru="Архив" data-ko="아카이브">Archive Vault</span>
         <span class="nav-badge red" id="trashBadge" style="display:none">0</span>
       </a>
 
-      <div class="nav-section" data-admin-only data-en="Admin" data-ru="Администрирование" data-ko="관리">Admin</div>
+      <div class="nav-section" data-admin-only data-en="Administration" data-ru="Администрирование" data-ko="관리">Administration</div>
 
       <a class="nav-item" data-view="users" href="#" data-admin-only>
         <svg class="nav-ic" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
         </svg>
-        <span data-en="Users" data-ru="Пользователи" data-ko="사용자">Users</span>
+        <span data-en="Team Control" data-ru="Команда" data-ko="팀 콘트롤">Team Control</span>
       </a>
 
       <div class="nav-section" data-en="Account" data-ru="Аккаунт" data-ko="계정">Account</div>
@@ -104,7 +105,7 @@
           <rect x="2" y="14" width="16" height="2" rx="1"/>
         </svg>
       </button>
-      <span class="topbar-title" id="topbarTitle" data-en="Dashboard" data-ru="Дашборд" data-ko="대시보드">Dashboard</span>
+      <span class="topbar-title" id="topbarTitle" data-en="Mission Control" data-ru="Центр управления" data-ko="미션 컨트롤">Mission Control</span>
       <span class="topbar-sep"></span>
       <span class="topbar-date" id="topDate"></span>
 
@@ -140,31 +141,43 @@
       <!-- ─── Dashboard view ─── -->
       <div class="view-section" id="viewDashboard">
 
-        <!-- Hero banner — Business Control Center -->
+        <!-- Hero banner — PULSAR Mission Control -->
         <div class="dash-hero" id="dashHero">
+          <div class="hero-orbs" aria-hidden="true">
+            <span class="hero-orb orb-1"></span>
+            <span class="hero-orb orb-2"></span>
+            <span class="hero-orb orb-3"></span>
+          </div>
           <div class="dash-hero-left">
+            <div class="hero-session-badge">
+              <span class="hsb-brand">PULSAR</span>
+              <span class="hsb-divider">·</span>
+              <span data-en="MISSION CONTROL" data-ru="ЦЕНТР УПРАВЛЕНИЯ" data-ko="미션 컨트롤">MISSION CONTROL</span>
+              <span class="hsb-divider">·</span>
+              <span id="heroSessionId">SESSION 001</span>
+            </div>
             <div class="dash-hero-greeting" id="dashHeroGreeting">
               <span data-en="ALL SYSTEMS OPERATIONAL" data-ru="ВСЕ СИСТЕМЫ РАБОТАЮТ" data-ko="시스템 정상 작동 중">ALL SYSTEMS OPERATIONAL</span>
             </div>
-            <div class="dash-hero-name" id="dashHeroName" data-en="Business Control Center" data-ru="Центр управления заявками" data-ko="비즈니스 관제 센터">Business Control Center</div>
-            <div class="dash-hero-sub" data-en="Manage requests, documents, employees and queue in one place. Real-time analytics across every channel." data-ru="Управляйте заявками, документами, сотрудниками и очередью в одном месте. Аналитика в реальном времени." data-ko="신청서·문서·직원·대기열을 한 곳에서 관리. 모든 채널의 실시간 분석.">Manage requests, documents, employees and queue in one place. Real-time analytics across every channel.</div>
+            <div class="dash-hero-name" id="dashHeroName" data-en="Mission Control" data-ru="Центр управления" data-ko="미션 컨트롤">Mission Control</div>
+            <div class="dash-hero-sub" data-en="Every request, document, team signal and client interaction — orchestrated from a single operational console." data-ru="Все заявки, документы, сигналы команды и взаимодействия с клиентами — управляются из единой операционной консоли." data-ko="모든 요청·문서·팀 신호·고객 상호작용을 하나의 운영 콘솔에서 통합 관제.">Every request, document, team signal and client interaction — orchestrated from a single operational console.</div>
           </div>
           <div class="dash-hero-right">
             <div class="dash-hero-status">
               <div class="dash-hero-status-dot"></div>
               <div class="dash-hero-status-text">
-                <div class="dash-hero-status-label" data-en="Live · Auto-sync" data-ru="Онлайн · Автосинхронизация" data-ko="라이브 · 자동 동기화">Live · Auto-sync</div>
+                <div class="dash-hero-status-label" data-en="Operator · Live console" data-ru="Оператор · Консоль онлайн" data-ko="오퍼레이터 · 라이브 콘솔">Operator · Live console</div>
                 <div class="dash-hero-status-val" id="dashHeroStatusVal"><span id="dashHeroUserGreet">Welcome</span>, <span id="dashHeroUsername">—</span></div>
               </div>
             </div>
             <div class="dash-hero-stats">
               <div class="dash-hero-stat">
                 <div class="dash-hero-stat-val" id="dashHeroTotal">—</div>
-                <div class="dash-hero-stat-label" data-en="Active requests" data-ru="Активных заявок" data-ko="활성 신청서">Active requests</div>
+                <div class="dash-hero-stat-label" data-en="Live signals" data-ru="Активные сигналы" data-ko="활성 신호">Live signals</div>
               </div>
               <div class="dash-hero-stat">
                 <div class="dash-hero-stat-val" id="dashHeroRate">—</div>
-                <div class="dash-hero-stat-label" data-en="Completion rate" data-ru="Выполнено" data-ko="완료율">Completion rate</div>
+                <div class="dash-hero-stat-label" data-en="Resolution rate" data-ru="Решено" data-ko="해결률">Resolution rate</div>
               </div>
             </div>
           </div>
@@ -481,12 +494,12 @@
 
       </div><!-- /viewDashboard -->
 
-      <!-- ─── Requests view ─── -->
+      <!-- ─── Request Flow view ─── -->
       <div class="view-section" id="viewRequests" style="display:none">
         <div class="page-hdr">
           <div>
-            <h1 data-en="Requests" data-ru="Заявки" data-ko="신청 목록">Requests</h1>
-            <div class="page-hdr-sub" data-en="All service requests" data-ru="Полный список заявок" data-ko="전체 서비스 신청서">All service requests</div>
+            <h1 data-en="Request Flow" data-ru="Поток заявок" data-ko="요청 흐름">Request Flow</h1>
+            <div class="page-hdr-sub" data-en="Every signal routed through your operations console" data-ru="Все сигналы, проходящие через операционную консоль" data-ko="운영 콘솔로 들어오는 모든 신호">Every signal routed through your operations console</div>
           </div>
         </div>
         <div class="view-toolbar">
@@ -523,12 +536,12 @@
         </div>
       </div><!-- /viewRequests -->
 
-      <!-- ─── Trash view ─── -->
+      <!-- ─── Archive Vault view ─── -->
       <div class="view-section" id="viewTrash" style="display:none">
         <div class="page-hdr">
           <div>
-            <h1 data-en="Trash" data-ru="Корзина" data-ko="휴지통">Trash</h1>
-            <div class="page-hdr-sub" data-en="Deleted requests — restore or permanently delete" data-ru="Удалённые заявки — восстановить или удалить насовсем" data-ko="삭제된 신청서 — 복원 또는 영구 삭제">Deleted requests — restore or permanently delete</div>
+            <h1 data-en="Archive Vault" data-ru="Архив" data-ko="아카이브 보관소">Archive Vault</h1>
+            <div class="page-hdr-sub" data-en="Archived signals — restore back into the flow or purge forever" data-ru="Архивированные сигналы — вернуть в поток или удалить навсегда" data-ko="아카이브된 신호 — 흐름으로 복원 또는 영구 삭제">Archived signals — restore back into the flow or purge forever</div>
           </div>
         </div>
         <div class="table-card">
@@ -554,12 +567,12 @@
         </div>
       </div><!-- /viewTrash -->
 
-      <!-- ─── Users view ─── -->
+      <!-- ─── Team Control view ─── -->
       <div class="view-section" id="viewUsers" style="display:none">
         <div class="page-hdr">
           <div>
-            <h1 data-en="Users" data-ru="Пользователи" data-ko="사용자">Users</h1>
-            <div class="page-hdr-sub" data-en="Manage system users and roles" data-ru="Управление пользователями и ролями" data-ko="사용자 및 권한 관리">Manage system users and roles</div>
+            <h1 data-en="Team Control" data-ru="Команда" data-ko="팀 콘트롤">Team Control</h1>
+            <div class="page-hdr-sub" data-en="Operators, access levels, and team signal routing" data-ru="Операторы, уровни доступа, распределение сигналов" data-ko="오퍼레이터, 접근 권한, 팀 신호 라우팅">Operators, access levels, and team signal routing</div>
           </div>
         </div>
         <div class="table-card">
@@ -1040,11 +1053,11 @@
       attachments: 'Attachments', attach_file: '＋ Attach file', move_trash: 'Move to trash',
       view: 'View', open: 'Open', add: 'Add',
       restore: 'Restore', del_forever: 'Delete forever', del_btn: 'Delete', you: 'You',
-      pg_dashboard: 'Dashboard', pg_requests: 'Requests', pg_trash: 'Trash', pg_users: 'Users',
-      pg_sub_dashboard: 'Overview of all service requests',
-      pg_sub_requests: 'All service requests',
-      pg_sub_trash: 'Deleted requests — restore or permanently delete',
-      pg_sub_users: 'Manage system users and roles',
+      pg_dashboard: 'Mission Control', pg_requests: 'Request Flow', pg_trash: 'Archive Vault', pg_users: 'Team Control',
+      pg_sub_dashboard: 'Live operations console',
+      pg_sub_requests: 'Every signal routed through your operations console',
+      pg_sub_trash: 'Archived signals — restore back into the flow or purge forever',
+      pg_sub_users: 'Operators, access levels, and team signal routing',
       chart_completed: 'Completed', chart_in_progress: 'In Progress',
       chart_new: 'New', chart_incomplete: 'Incomplete', chart_tooltip: 'requests',
       completion_rate: pct => `${pct}% completion rate`,
@@ -1088,11 +1101,11 @@
       attachments: 'Вложения', attach_file: '＋ Прикрепить файл', move_trash: 'В корзину',
       view: 'Открыть', open: 'Открыть', add: 'Добавить',
       restore: 'Восстановить', del_forever: 'Удалить навсегда', del_btn: 'Удалить', you: 'Вы',
-      pg_dashboard: 'Дашборд', pg_requests: 'Заявки', pg_trash: 'Корзина', pg_users: 'Пользователи',
-      pg_sub_dashboard: 'Обзор всех заявок',
-      pg_sub_requests: 'Полный список заявок',
-      pg_sub_trash: 'Удалённые заявки — восстановить или удалить насовсем',
-      pg_sub_users: 'Управление пользователями и ролями',
+      pg_dashboard: 'Центр управления', pg_requests: 'Поток заявок', pg_trash: 'Архив', pg_users: 'Команда',
+      pg_sub_dashboard: 'Операционная консоль в реальном времени',
+      pg_sub_requests: 'Все сигналы, проходящие через операционную консоль',
+      pg_sub_trash: 'Архивированные сигналы — вернуть в поток или удалить навсегда',
+      pg_sub_users: 'Операторы, уровни доступа, распределение сигналов',
       chart_completed: 'Завершена', chart_in_progress: 'В работе',
       chart_new: 'Новая', chart_incomplete: 'Не завершена', chart_tooltip: 'заявок',
       completion_rate: pct => `${pct}% выполнено`,
@@ -1136,11 +1149,11 @@
       attachments: '첨부 파일', attach_file: '＋ 파일 첨부', move_trash: '휴지통으로',
       view: '보기', open: '열기', add: '추가',
       restore: '복원', del_forever: '영구 삭제', del_btn: '삭제', you: '나',
-      pg_dashboard: '대시보드', pg_requests: '신청 목록', pg_trash: '휴지통', pg_users: '사용자',
-      pg_sub_dashboard: '서비스 신청 현황',
-      pg_sub_requests: '전체 서비스 신청서',
-      pg_sub_trash: '삭제된 신청서 — 복원 또는 영구 삭제',
-      pg_sub_users: '사용자 및 권한 관리',
+      pg_dashboard: '미션 컨트롤', pg_requests: '요청 흐름', pg_trash: '아카이브 보관소', pg_users: '팀 콘트롤',
+      pg_sub_dashboard: '실시간 운영 콘솔',
+      pg_sub_requests: '운영 콘솔로 들어오는 모든 신호',
+      pg_sub_trash: '아카이브된 신호 — 흐름으로 복원 또는 영구 삭제',
+      pg_sub_users: '오퍼레이터, 접근 권한, 팀 신호 라우팅',
       chart_completed: '완료', chart_in_progress: '처리 중',
       chart_new: '신규', chart_incomplete: '미완료', chart_tooltip: '건',
       completion_rate: pct => `완료율 ${pct}%`,
@@ -1361,6 +1374,16 @@
     if (greetEl) greetEl.textContent = greetingByHour;
     const nameEl = document.getElementById('dashHeroUsername');
     if (nameEl) nameEl.textContent = currentUser.username;
+
+    // Session badge — deterministic short ID from username + today's date
+    const sidEl = document.getElementById('heroSessionId');
+    if (sidEl) {
+      const seedStr = (currentUser.username || 'op') + new Date().toISOString().slice(0, 10);
+      let h = 5381;
+      for (let i = 0; i < seedStr.length; i++) h = ((h << 5) + h + seedStr.charCodeAt(i)) >>> 0;
+      const sid = String(h % 100000).padStart(5, '0');
+      sidEl.textContent = `SESSION ${sid}`;
+    }
     document.getElementById('dashHeroTotal').textContent = active.total ?? 0;
     const pct = active.total ? Math.round((active.completed / active.total) * 100) : 0;
     document.getElementById('dashHeroRate').textContent = pct + '%';

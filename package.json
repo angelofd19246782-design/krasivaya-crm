@@ -1,7 +1,7 @@
 {
-  "name": "nexus-crm",
+  "name": "pulsar",
   "version": "1.0.0",
-  "description": "Nexus CRM + Bot Backend",
+  "description": "PULSAR — Control Platform for client operations",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
