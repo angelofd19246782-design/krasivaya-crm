@@ -2902,21 +2902,21 @@ body::after {
   border-radius: 50%;
   pointer-events: none;
   overflow: hidden;
-  /* conic gradient sweep — looks like a radar beam */
+  /* Soft conic-gradient beam — long faded tail, bright leading edge.
+     Rotation is driven by JS (requestAnimationFrame) so the sweep
+     stays perfectly in sync with dot activation logic. */
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    transparent 270deg,
-    rgba(129,140,248,0.05) 320deg,
-    rgba(129,140,248,0.28) 355deg,
-    rgba(199,210,254,0.45) 358deg,
-    rgba(255,255,255,0.6) 360deg
+    transparent 235deg,
+    rgba(129,140,248,0.035) 275deg,
+    rgba(129,140,248,0.10) 315deg,
+    rgba(129,140,248,0.22) 345deg,
+    rgba(199,210,254,0.50) 356deg,
+    rgba(255,255,255,0.78) 360deg
   );
-  animation: radar-sweep 7s linear infinite;
+  will-change: transform;
   mix-blend-mode: screen;
-}
-@keyframes radar-sweep {
-  to { transform: rotate(360deg); }
 }
 
 /* Radar center pip */
@@ -2951,7 +2951,9 @@ body::after {
   font-weight: 700;
 }
 
-/* Radar plotted dots — positioned by JS */
+/* Radar signals — positioned and animated by JS (radar persistence).
+   Each dot's opacity is set every frame by the rAF loop based on
+   how long ago the beam swept across it. */
 .radar-dot {
   position: absolute;
   width: 7px;
@@ -2959,7 +2961,8 @@ body::after {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  animation: dotFade 5s ease-in-out infinite;
+  opacity: 0;
+  will-change: opacity;
 }
 .radar-dot::before {
   content: '';
@@ -2967,16 +2970,12 @@ body::after {
   inset: -5px;
   border-radius: 50%;
   background: radial-gradient(circle, currentColor 0%, transparent 60%);
-  opacity: 0.45;
+  opacity: 0.55;
 }
 .radar-dot.d-new        { background: #f59e0b; color: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
 .radar-dot.d-in_progress{ background: #3b82f6; color: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
 .radar-dot.d-completed  { background: #10b981; color: #10b981; box-shadow: 0 0 10px #10b981; }
 .radar-dot.d-incomplete { background: #f43f5e; color: #f43f5e; box-shadow: 0 0 10px #f43f5e; }
-@keyframes dotFade {
-  0%, 100% { opacity: 0.45; }
-  50%      { opacity: 1; }
-}
 
 /* Status row under radar */
 .radar-status-row {

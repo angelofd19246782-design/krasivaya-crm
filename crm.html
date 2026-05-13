@@ -1484,54 +1484,129 @@
     }
   }
 
-  // ─── Radar dot rendering ───
-  // Distributes signals organically across rings using a golden-angle spiral.
-  // Newer signals tend toward the center, older toward the outer rings,
-  // with per-signal jitter so the layout never feels mechanical.
+  // ─── Radar signal rendering — golden-angle distribution + persistence data ───
+  // Each dot is positioned organically (sunflower spread) and tagged with its
+  // own "personality" (decay rate, peak brightness, flicker, blink) which the
+  // requestAnimationFrame loop uses to animate radar-persistence behaviour.
   function renderRadarDots(apps) {
     const host = document.getElementById('radarDots');
     if (!host) return;
     host.innerHTML = '';
 
-    // Take ~20 most recent live signals — enough to feel populated, sparse enough to breathe
     const live = apps.filter(a => !a.deleted_at)
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       .slice(0, 20);
     if (!live.length) return;
 
-    const PHI_DEG = 137.508; // golden angle — natural sunflower spread
+    const PHI_DEG = 137.508; // golden angle for organic spread
 
     live.forEach((a, idx) => {
-      // Rank-based radius with a gentle curve that biases dots OUTWARD,
-      // so the inner zone is never crowded.
-      const rankRatio = idx / Math.max(1, live.length - 1);   // 0 (newest) → 1 (oldest)
-      const eased = Math.pow(rankRatio, 0.55);                // outer-biased ease
-      const base  = 14 + eased * 28;                          // 14% → 42% offset from center
-
-      // Deterministic jitter from id so positions are stable across renders
+      const rankRatio = idx / Math.max(1, live.length - 1);
+      const eased = Math.pow(rankRatio, 0.55);
+      const base  = 14 + eased * 28;
       const jitter = ((a.id * 2654435761) % 1024) / 1024 - 0.5;
       const radius = Math.max(10, Math.min(45, base + jitter * 6));
 
-      // Golden-angle increment + stable per-id offset for organic angular spread
       const idOffset = (a.id * 17 + a.queue_number * 7) % 360;
       const angleDeg = (idx * PHI_DEG + idOffset * 0.4) % 360;
       const angle = angleDeg * Math.PI / 180;
-
       const cx = 50 + Math.cos(angle) * radius;
       const cy = 50 + Math.sin(angle) * radius;
+
+      // Per-signal "personality" — deterministic from id so positions/behaviour
+      // are stable across re-renders, but varied across the matrix.
+      const h = a.id * 2654435761 >>> 0;
+      const decay   = 0.62 + ((h >>> 4) % 100) / 100 * 0.55;       // 0.62 – 1.17 (smaller = slower fade)
+      const maxB    = 0.68 + ((h >>> 12) % 100) / 100 * 0.32;      // 0.68 – 1.00 (peak brightness)
+      const flicker = ((h >>> 20) % 100) < 28 ? 1 : 0;             // ~28% flicker
+      const blink   = ((h >>> 6)  % 100) < 12 ? 1 : 0;             // ~12% blink right after activation
+      const fphase  = ((h >>> 2)  % 1000) / 1000 * 6.283;
 
       const dot = document.createElement('div');
       dot.className = 'radar-dot d-' + a.status;
       dot.style.left = cx + '%';
       dot.style.top  = cy + '%';
-      // Stagger the fade animation so dots don't all pulse in unison
-      dot.style.animationDelay = ((idx * 0.18) % 2.5) + 's';
+      dot.dataset.angle   = angleDeg.toFixed(2);
+      dot.dataset.decay   = decay.toFixed(3);
+      dot.dataset.max     = maxB.toFixed(3);
+      dot.dataset.flicker = flicker;
+      dot.dataset.blink   = blink;
+      dot.dataset.fphase  = fphase.toFixed(3);
       dot.title = `#${a.id} ${a.name} · ${a.status}`;
       dot.addEventListener('click', () => openDrawer(a.id));
       dot.style.cursor = 'pointer';
       dot.style.pointerEvents = 'auto';
       host.appendChild(dot);
     });
+
+    // First-render: kick off the radar persistence animation loop.
+    startRadarLoop();
+  }
+
+  // ─── Radar persistence animation loop ───
+  // - Sweep beam rotates at a fixed period (driven by JS, perfectly synced)
+  // - Each dot's intensity = peakBright × exp(-Δ × decay / 60)
+  //   where Δ is degrees-since-sweep-passed (0 = lit, 360 = one rev later)
+  // - Snap-to-bright as the beam crosses, gradual exponential fade after
+  // - Some dots flicker (small sin noise), some blink (brief dip after sweep)
+  let _radarSweepEl = null;
+  let _radarStartMs = null;
+  const _RADAR_PERIOD_MS = 7000;
+  let _radarLoopStarted = false;
+
+  function startRadarLoop() {
+    if (_radarLoopStarted) return;
+    _radarLoopStarted = true;
+    _radarSweepEl = document.querySelector('.radar-sweep');
+    _radarStartMs = performance.now();
+    requestAnimationFrame(_radarFrame);
+  }
+
+  function _radarFrame(nowTs) {
+    const now = nowTs || performance.now();
+    const elapsed = (now - _radarStartMs) % _RADAR_PERIOD_MS;
+    const progress = elapsed / _RADAR_PERIOD_MS;
+    const sweepRotDeg = progress * 360;
+
+    // Drive the beam rotation (replaces the removed CSS animation)
+    if (_radarSweepEl) _radarSweepEl.style.transform = 'rotate(' + sweepRotDeg + 'deg)';
+
+    // Sweep edge in math-angle (current dot reference: 0=east, 90=south, 180=west, 270=north).
+    // CSS rotate(R) on conic-gradient (from 0deg = top) → bright edge at math (270 + R).
+    const sweepMathDeg = (270 + sweepRotDeg) % 360;
+
+    const dots = _radarSweepEl ? _radarSweepEl.parentElement.querySelectorAll('.radar-dot') : null;
+    if (dots && dots.length) {
+      for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        const dotDeg = +dot.dataset.angle;
+        if (dotDeg !== dotDeg) continue; // NaN guard
+        const decay = +dot.dataset.decay || 0.8;
+        const maxB  = +dot.dataset.max   || 1;
+
+        // Δ = degrees the sweep has travelled past this dot (0 = right on it,
+        // 359 = nearly one full rev later, about to arrive again)
+        let delta = (sweepMathDeg - dotDeg + 360) % 360;
+
+        // Exponential decay. delta=0 → maxB; delta=60 → ≈0.46×maxB (decay≈0.77)
+        let intensity = maxB * Math.exp(-delta * decay / 60);
+
+        // Blink: a brief dip 6–12° after activation, then back to curve
+        if (dot.dataset.blink === '1' && delta > 6 && delta < 13) {
+          intensity *= 0.35;
+        }
+
+        // Flicker: small sin-noise on top of the decay curve (always small)
+        if (dot.dataset.flicker === '1') {
+          const phase = +dot.dataset.fphase || 0;
+          intensity *= 0.86 + 0.14 * Math.sin(now * 0.010 + phase);
+        }
+
+        dot.style.opacity = intensity.toFixed(3);
+      }
+    }
+
+    requestAnimationFrame(_radarFrame);
   }
 
   // ─── Live feed (right column of hero) ───
