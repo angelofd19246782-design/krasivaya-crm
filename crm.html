@@ -275,7 +275,7 @@
 
             <!-- Bottom row: 3 supporting micro-analytics modules -->
             <div class="odp-row-bottom">
-              <!-- Module 1: Resolution velocity (radial arc) -->
+              <!-- Module 1: Resolution velocity (radial arc + trend) -->
               <div class="odp-micro">
                 <div class="odp-micro-label" data-en="RESOLUTION VELOCITY" data-ru="СКОРОСТЬ РЕШЕНИЯ" data-ko="해결 속도">RESOLUTION VELOCITY</div>
                 <div class="odp-radial-mod">
@@ -293,24 +293,28 @@
                   <div class="odp-radial-text">
                     <div class="odp-radial-val" id="opdRadialVal">—</div>
                     <div class="odp-radial-sub" data-en="COMPLETED" data-ru="ЗАВЕРШЕНО" data-ko="완료">COMPLETED</div>
+                    <div class="odp-radial-trend flat" id="opdRadialTrend">—</div>
                   </div>
                 </div>
               </div>
 
-              <!-- Module 2: Status pulse (4 dots + values) -->
+              <!-- Module 2: Status pulse (4 dots + name + value) -->
               <div class="odp-micro">
                 <div class="odp-micro-label" data-en="STATUS PULSE" data-ru="ПУЛЬС СТАТУСОВ" data-ko="상태 펄스">STATUS PULSE</div>
                 <div class="odp-pulse-row">
-                  <div class="opp-cell"><div class="opp-dot" style="background:#f59e0b;color:#f59e0b"></div><div class="opp-val" id="oppNew">—</div></div>
-                  <div class="opp-cell"><div class="opp-dot" style="background:#3b82f6;color:#3b82f6"></div><div class="opp-val" id="oppInProgress">—</div></div>
-                  <div class="opp-cell"><div class="opp-dot" style="background:#10b981;color:#10b981"></div><div class="opp-val" id="oppCompleted">—</div></div>
-                  <div class="opp-cell"><div class="opp-dot" style="background:#f43f5e;color:#f43f5e"></div><div class="opp-val" id="oppIncomplete">—</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#f59e0b;color:#f59e0b"></div><div class="opp-val" id="oppNew">—</div><div class="opp-name" data-en="NEW" data-ru="НОВЫЕ" data-ko="신규">NEW</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#3b82f6;color:#3b82f6"></div><div class="opp-val" id="oppInProgress">—</div><div class="opp-name" data-en="ACT" data-ru="АКТ" data-ko="활성">ACT</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#10b981;color:#10b981"></div><div class="opp-val" id="oppCompleted">—</div><div class="opp-name" data-en="DONE" data-ru="ГОТ" data-ko="완료">DONE</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#f43f5e;color:#f43f5e"></div><div class="opp-val" id="oppIncomplete">—</div><div class="opp-name" data-en="HOLD" data-ru="ПАУ" data-ko="보류">HOLD</div></div>
                 </div>
               </div>
 
-              <!-- Module 3: 7-day activity bars -->
+              <!-- Module 3: 7-day activity bars + peak -->
               <div class="odp-micro">
-                <div class="odp-micro-label" data-en="7D ACTIVITY" data-ru="АКТИВНОСТЬ · 7Д" data-ko="7일 활동">7D ACTIVITY</div>
+                <div class="odp-bars-head">
+                  <div class="odp-micro-label" data-en="7D ACTIVITY" data-ru="АКТИВНОСТЬ · 7Д" data-ko="7일 활동">7D ACTIVITY</div>
+                  <div class="odp-bars-peak" id="opdBarsPeak">PEAK <strong>—</strong></div>
+                </div>
                 <div class="odp-bars-mod">
                   <div class="odp-bars" id="odpTrendBars"></div>
                   <div class="odp-bars-meta">
@@ -345,16 +349,26 @@
           </div>
         </section>
 
-        <!-- ════════ ACTIVITY HEATMAP BAND ════════ -->
-        <section class="ops-heatmap-band">
-          <div class="ohb-header">
-            <div class="ohb-label-block">
-              <div class="ohb-tag" data-en="OPERATIONAL DENSITY" data-ru="ПЛОТНОСТЬ ОПЕРАЦИЙ" data-ko="운영 밀도">OPERATIONAL DENSITY</div>
-              <div class="ohb-title" data-en="Activity Map · 5 weeks" data-ru="Карта активности · 5 недель" data-ko="활동 맵 · 5주">Activity Map · 5 weeks</div>
+        <!-- ════════ ACTIVITY LANDSCAPE — 3D operational density ════════ -->
+        <section class="ops-density-band">
+          <div class="odb-header">
+            <div class="odb-header-left">
+              <div class="odb-tag" data-en="OPERATIONAL DENSITY · 3D" data-ru="ПЛОТНОСТЬ ОПЕРАЦИЙ · 3D" data-ko="운영 밀도 · 3D">OPERATIONAL DENSITY · 3D</div>
+              <div class="odb-title" data-en="Activity Landscape" data-ru="Ландшафт активности" data-ko="활동 지형">Activity Landscape</div>
             </div>
-            <div class="ohb-sub" data-en="Each cell = daily signal volume" data-ru="Каждая ячейка = объём за день" data-ko="셀당 일별 신호량">Each cell = daily signal volume</div>
+            <div class="odb-sub" data-en="5-week signal terrain · cube height = volume" data-ru="Рельеф сигналов · 5 недель · высота = объём" data-ko="5주 신호 지형 · 큐브 높이 = 볼륨">5-week signal terrain · cube height = volume</div>
           </div>
           <div id="heatmapContainer"></div>
+          <div class="density-legend">
+            <span class="dl-label" data-en="VOLUME" data-ru="ОБЪЁМ" data-ko="볼륨">VOLUME</span>
+            <div class="dl-scale">
+              <div class="dl-cube dl-lo"></div>
+              <div class="dl-cube dl-mid"></div>
+              <div class="dl-cube dl-hi"></div>
+              <div class="dl-cube dl-hot"></div>
+            </div>
+            <span class="dl-label" data-en="LOW → HIGH" data-ru="МИН → МАКС" data-ko="저 → 고">LOW → HIGH</span>
+          </div>
         </section>
 
         <!-- ════════ INSIGHT MODULES ════════ -->
@@ -1494,17 +1508,42 @@
 
   // ─── Distribution panel — supporting micro-analytics modules ───
   function buildDistMicros(active, daily) {
-    // Module 1: Resolution velocity (radial arc)
+    // Module 1: Resolution velocity — radial arc + week-over-week trend
     const total = active.total || 0;
     const pct = total > 0 ? Math.round((active.completed || 0) / total * 100) : 0;
     const arcEl = document.getElementById('opdRadialArc');
     if (arcEl) {
       const r = 26;
-      const circ = 2 * Math.PI * r;            // ≈ 163
+      const circ = 2 * Math.PI * r;
       const arcLen = (pct / 100) * circ;
       arcEl.setAttribute('stroke-dasharray', `${arcLen.toFixed(2)} ${(circ - arcLen).toFixed(2)}`);
     }
     setText('opdRadialVal', pct + '%');
+
+    // Trend: this week vs last week total signal volume
+    const dayMap = {};
+    (daily || []).forEach(d => { dayMap[d.day] = d.count; });
+    let week1 = 0, week2 = 0;
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const ds = d.toISOString().slice(0, 10);
+      const c = dayMap[ds] || 0;
+      if (i < 7) week1 += c; else week2 += c;
+    }
+    const trendEl = document.getElementById('opdRadialTrend');
+    if (trendEl) {
+      if (week2 > 0) {
+        const delta = Math.round((week1 - week2) / week2 * 100);
+        const cls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+        const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
+        const wkLabel = L.lang === 'ru' ? 'нед.' : L.lang === 'ko' ? '주' : 'wk';
+        trendEl.className = 'odp-radial-trend ' + cls;
+        trendEl.textContent = `${arrow} ${delta > 0 ? '+' : ''}${delta}% ${wkLabel}/wk`;
+      } else {
+        trendEl.className = 'odp-radial-trend flat';
+        trendEl.textContent = '— wk/wk';
+      }
+    }
 
     // Module 2: Status pulse counts
     setText('oppNew',         active.new ?? 0);
@@ -1512,11 +1551,9 @@
     setText('oppCompleted',   active.completed ?? 0);
     setText('oppIncomplete',  active.incomplete ?? 0);
 
-    // Module 3: 7-day activity bars
+    // Module 3: 7-day activity bars + peak label
     const host = document.getElementById('odpTrendBars');
     if (host) {
-      const dayMap = {};
-      (daily || []).forEach(d => { dayMap[d.day] = d.count; });
       const todayStr = new Date().toISOString().slice(0, 10);
       const days = [];
       for (let i = 6; i >= 0; i--) {
@@ -1532,6 +1569,13 @@
         const label = new Date(d.day + 'T12:00:00').toLocaleDateString(locale, { weekday: 'short', day: 'numeric' });
         return `<div class="odp-bar${isToday ? ' today' : ''}" style="height:${h}px" title="${label}: ${d.count}"></div>`;
       }).join('');
+
+      // Peak label
+      const peakEl = document.getElementById('opdBarsPeak');
+      if (peakEl) {
+        const peakLbl = L.lang === 'ru' ? 'ПИК' : L.lang === 'ko' ? '피크' : 'PEAK';
+        peakEl.innerHTML = `${peakLbl} <strong>${max}</strong>`;
+      }
     }
   }
 
@@ -1795,64 +1839,114 @@
     }).join('');
   }
 
+  // ─── 3D Activity Landscape — extruded cubes on a tilted floor ───
   function buildActivityHeatmap() {
     const el = document.getElementById('heatmapContainer');
     if (!el) return;
 
-    const WEEKS = 5;
+    const WEEKS = 5, DAYS = 7;
     const countMap = {};
     _lastDaily.forEach(r => { countMap[r.day] = r.count; });
 
     const todayStr = new Date().toISOString().slice(0, 10);
     const today    = new Date(todayStr);
-    const todayDow = today.getDay(); // 0=Sun
-
-    // Align to Monday of the week containing today, then go back (WEEKS-1) more weeks
+    const todayDow = today.getDay();
     const daysSinceMonday = todayDow === 0 ? 6 : todayDow - 1;
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - daysSinceMonday - (WEEKS - 1) * 7);
 
     const maxCount = Math.max(...Object.values(countMap), 1);
-    const getColor = c => {
-      if (!c) return 'rgba(255,255,255,0.04)';
-      const t = c / maxCount;
-      if (t < 0.2)  return 'rgba(99,102,241,0.18)';
-      if (t < 0.4)  return 'rgba(129,140,248,0.36)';
-      if (t < 0.65) return 'rgba(129,140,248,0.62)';
-      if (t < 0.85) return 'rgba(139,92,246,0.85)';
-      return '#a855f7';
-    };
+    const MAX_HEIGHT = 78; // px in stage local frame
 
-    const dayLabels = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-    const weeksHtml = Array.from({ length: WEEKS }, (_, w) =>
-      `<div class="hm-week">${Array.from({ length: 7 }, (__, d) => {
+    // 5 color tiers — low/mid/high/hot violet→magenta
+    function cubeColors(intensity, isToday) {
+      if (isToday) {
+        return {
+          top: '#f5d0fe', topD: '#e879f9',
+          mid: '#c026d3', midD: '#86198f',
+          glow: 'rgba(232,121,249,0.85)', glowSize: '36px',
+        };
+      }
+      if (intensity < 0.05) return null; // empty cube
+      if (intensity < 0.28) return {
+        top: '#6366f1', topD: '#4338ca',
+        mid: '#3730a3', midD: '#1e1b4b',
+        glow: 'rgba(99,102,241,0.32)', glowSize: '14px',
+      };
+      if (intensity < 0.55) return {
+        top: '#818cf8', topD: '#6366f1',
+        mid: '#4f46e5', midD: '#312e81',
+        glow: 'rgba(129,140,248,0.52)', glowSize: '20px',
+      };
+      if (intensity < 0.82) return {
+        top: '#a78bfa', topD: '#8b5cf6',
+        mid: '#7c3aed', midD: '#4c1d95',
+        glow: 'rgba(168,85,247,0.68)', glowSize: '26px',
+      };
+      return {
+        top: '#e879f9', topD: '#c026d3',
+        mid: '#a21caf', midD: '#581c87',
+        glow: 'rgba(232,121,249,0.82)', glowSize: '32px',
+      };
+    }
+
+    // Build grid row-by-row: day index outer, week index inner
+    const cubesHtml = [];
+    for (let d = 0; d < DAYS; d++) {
+      for (let w = 0; w < WEEKS; w++) {
         const cell = new Date(startDate);
         cell.setDate(startDate.getDate() + w * 7 + d);
-        const ds     = cell.toISOString().slice(0, 10);
-        const count  = countMap[ds] || 0;
+        const ds = cell.toISOString().slice(0, 10);
+        const count = countMap[ds] || 0;
         const future = ds > todayStr;
         const isToday = ds === todayStr;
-        const locale  = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
-        const label   = cell.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ': ' + count;
-        const intensity = count / maxCount;
-        const shadow = count && intensity > 0.4 ? `box-shadow:0 0 ${6 + intensity * 8}px rgba(139,92,246,${0.3 + intensity * 0.4});` : '';
-        return `<div class="hm-cell${isToday ? ' hm-today' : ''}" style="background:${getColor(count)};opacity:${future ? 0.18 : 1};${shadow}" title="${label}"></div>`;
-      }).join('')}</div>`
-    ).join('');
+        const intensity = future ? 0 : (count / maxCount);
+        const h = future ? 0 : Math.max(4, Math.round(Math.pow(intensity, 0.78) * MAX_HEIGHT));
+        const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
+        const label = cell.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
+        const c = cubeColors(intensity, isToday);
+        // Staggered rise delay — diagonal wave from back-left to front-right
+        const delay = ((d + w) * 0.045).toFixed(2) + 's';
 
-    const dayLabelsHtml = `<div class="hm-day-labels">${dayLabels.map(l => `<div class="hm-day-label">${l}</div>`).join('')}</div>`;
+        if (future || !c) {
+          cubesHtml.push(`<div class="dcube empty" style="--delay:${delay}" title="${esc(label)}: 0"><div class="dcube-top"></div></div>`);
+        } else {
+          const style = `--h:${h}px;--top:${c.top};--topD:${c.topD};--mid:${c.mid};--midD:${c.midD};--glow:${c.glow};--glow-size:${c.glowSize};--delay:${delay}`;
+          cubesHtml.push(
+            `<div class="dcube${isToday ? ' today' : ''}" style="${style}" title="${esc(label)}: ${count}">` +
+              `<div class="dcube-front"></div>` +
+              `<div class="dcube-right"></div>` +
+              `<div class="dcube-top"></div>` +
+            `</div>`
+          );
+        }
+      }
+    }
 
-    const legendStops = [0, 0.2, 0.45, 0.7, 1];
-    const legendHtml  = legendStops.map(s => `<div style="width:13px;height:13px;border-radius:3px;background:${getColor(s ? Math.ceil(s * maxCount) : 0)}"></div>`).join('');
-    const lessLabel = L.lang === 'ru' ? 'Меньше' : L.lang === 'ko' ? '적음' : 'Less';
-    const moreLabel = L.lang === 'ru' ? 'Больше' : L.lang === 'ko' ? '많음' : 'More';
+    // Day labels (vertical, left side) — short forms
+    const dayShort = L.lang === 'ru'
+      ? ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС']
+      : L.lang === 'ko'
+      ? ['월','화','수','목','금','토','일']
+      : ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+
+    // Week labels along bottom — W-4 ... W0 with W0 highlighted
+    const weekLabels = Array.from({ length: WEEKS }, (_, i) => {
+      const wn = WEEKS - 1 - i;
+      const lbl = wn === 0
+        ? (L.lang === 'ru' ? 'СЕЙЧАС' : L.lang === 'ko' ? '현재' : 'NOW')
+        : `W−${wn}`;
+      return `<span${wn === 0 ? ' class="wk-now"' : ''}>${lbl}</span>`;
+    }).join('');
 
     el.innerHTML = `
-      <div class="hm-outer">${dayLabelsHtml}<div class="heatmap-wrap">${weeksHtml}</div></div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:14px;justify-content:flex-end">
-        <span style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:0.4px;text-transform:uppercase">${lessLabel}</span>
-        ${legendHtml}
-        <span style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:0.4px;text-transform:uppercase">${moreLabel}</span>
+      <div class="density-scene">
+        <div class="density-day-labels">${dayShort.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="density-stage">
+          <div class="density-floor"></div>
+          <div class="density-grid">${cubesHtml.join('')}</div>
+        </div>
+        <div class="density-week-labels">${weekLabels}</div>
       </div>`;
   }
 
