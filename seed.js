@@ -119,8 +119,9 @@ function weightedPick(items, weights) {
 
 // ─── Date/time helpers ────────────────────────────────────────────────────────
 
-// Today is 2026-04-20
-const TODAY = new Date('2026-04-20T23:59:59Z');
+// Anchor on the current day so seeded data is always fresh relative to viewing
+const TODAY = new Date();
+TODAY.setUTCHours(23, 59, 59, 0);
 
 function daysAgo(n) {
   const d = new Date(TODAY);
