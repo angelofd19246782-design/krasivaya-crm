@@ -1856,7 +1856,8 @@
     startDate.setDate(today.getDate() - daysSinceMonday - (WEEKS - 1) * 7);
 
     const maxCount = Math.max(...Object.values(countMap), 1);
-    const MAX_DEPTH = 22; // px — subtle extrusion, voxel-wall not runway
+    const MAX_DEPTH = 34; // px — depth visible at rotateY(-22°)/rotateX(13°)
+    const MIN_DEPTH = 4;  // every active cube has at least this much depth
 
     // 4 color tiers + today highlight
     function cubeColors(intensity, isToday) {
@@ -1867,24 +1868,24 @@
       };
       if (intensity < 0.05) return null; // empty
       if (intensity < 0.30) return {
-        top: '#5b54e0', topD: '#4338ca',
-        mid: '#3730a3', midD: '#1e1b4b',
-        glow: 'rgba(99,102,241,0.26)', glowSize: '8px',
+        top: '#5b54e0', topD: '#3730a3',
+        mid: '#312e81', midD: '#1e1b4b',
+        glow: 'rgba(99,102,241,0.28)', glowSize: '9px',
       };
       if (intensity < 0.60) return {
-        top: '#818cf8', topD: '#6366f1',
-        mid: '#4f46e5', midD: '#312e81',
-        glow: 'rgba(129,140,248,0.44)', glowSize: '12px',
+        top: '#818cf8', topD: '#5b54e0',
+        mid: '#4338ca', midD: '#1e1b4b',
+        glow: 'rgba(129,140,248,0.48)', glowSize: '13px',
       };
       if (intensity < 0.85) return {
-        top: '#a78bfa', topD: '#8b5cf6',
-        mid: '#7c3aed', midD: '#4c1d95',
-        glow: 'rgba(168,85,247,0.58)', glowSize: '16px',
+        top: '#a78bfa', topD: '#7c3aed',
+        mid: '#5b21b6', midD: '#3c1361',
+        glow: 'rgba(168,85,247,0.62)', glowSize: '17px',
       };
       return {
-        top: '#e879f9', topD: '#c026d3',
-        mid: '#a21caf', midD: '#581c87',
-        glow: 'rgba(232,121,249,0.70)', glowSize: '20px',
+        top: '#e879f9', topD: '#a21caf',
+        mid: '#7e22ce', midD: '#3b0764',
+        glow: 'rgba(232,121,249,0.74)', glowSize: '22px',
       };
     }
 
@@ -1899,8 +1900,8 @@
         const future = ds > todayStr;
         const isToday = ds === todayStr;
         const intensity = future ? 0 : (count / maxCount);
-        // Eased depth — pow 0.7 spreads the mid range so most cubes are visible
-        const depth = future ? 0 : Math.round(2 + Math.pow(intensity, 0.7) * MAX_DEPTH);
+        // Eased depth — pow 0.65 lifts mid-range cubes so the 3D effect reads everywhere
+        const depth = future ? 0 : Math.round(MIN_DEPTH + Math.pow(intensity, 0.65) * (MAX_DEPTH - MIN_DEPTH));
         const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
         const label = cell.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
         const c = cubeColors(intensity, isToday);

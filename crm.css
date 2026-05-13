@@ -3532,7 +3532,7 @@ body::after {
 
 /* ════════════════════════════════════════════════════════════
    ACTIVITY LANDSCAPE — voxel wall (compact 3D heatmap)
-   Cubes stay aligned in a grid; intensity = extrusion depth.
+   Real CSS 3D: each cell is a cube with front + top + side faces.
    ════════════════════════════════════════════════════════════ */
 .ops-density-band {
   position: relative;
@@ -3540,6 +3540,9 @@ body::after {
   margin-bottom: 24px;
   padding: 22px 28px 20px;
   background:
+    /* Faint wall grid texture visible in cube gaps */
+    linear-gradient(rgba(129, 140, 248, 0.025) 1px, transparent 1px) 50% 50%/24px 24px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.025) 1px, transparent 1px) 50% 50%/24px 24px,
     radial-gradient(ellipse 50% 40% at 50% 50%, rgba(99, 102, 241, 0.06) 0%, transparent 70%),
     linear-gradient(180deg, rgba(20, 22, 38, 0.82) 0%, rgba(12, 14, 26, 0.86) 100%);
   border: 1px solid var(--line);
@@ -3586,16 +3589,17 @@ body::after {
   font-weight: 700;
 }
 
-/* ─── Voxel scene — compact, slight tilt, no perspective floor ─── */
+/* ─── Voxel scene — near perspective + isometric-ish tilt ─── */
 .density-scene {
   position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  perspective: 1600px;
+  /* Close enough that depth is clearly perceptible */
+  perspective: 1100px;
   perspective-origin: 50% 50%;
-  padding: 14px 0 18px;
+  padding: 18px 0 24px;
 }
 
 .density-stage {
@@ -3603,8 +3607,8 @@ body::after {
   align-items: flex-start;
   gap: 14px;
   transform-style: preserve-3d;
-  /* Subtle tilt — just enough to reveal cube sides */
-  transform: rotateY(-13deg) rotateX(6deg);
+  /* Strong enough tilt to actually reveal cube side + top walls */
+  transform: rotateY(-22deg) rotateX(13deg);
   transform-origin: 50% 50%;
 }
 
@@ -3612,11 +3616,11 @@ body::after {
 .density-day-labels {
   display: grid;
   grid-template-rows: repeat(7, 30px);
-  gap: 5px;
+  gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   color: var(--t3);
-  letter-spacing: 1.1px;
+  letter-spacing: 1px;
   font-weight: 700;
   text-transform: uppercase;
   padding-top: 0;
@@ -3632,24 +3636,25 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transform-style: preserve-3d;
 }
 
 .density-grid {
   display: grid;
-  grid-template-columns: repeat(5, 60px);
+  grid-template-columns: repeat(5, 54px);
   grid-template-rows: repeat(7, 30px);
-  gap: 5px;
+  gap: 4px;
   transform-style: preserve-3d;
 }
 
 .density-week-labels {
   display: grid;
-  grid-template-columns: repeat(5, 60px);
-  gap: 5px;
+  grid-template-columns: repeat(5, 54px);
+  gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   color: var(--t3);
-  letter-spacing: 1.1px;
+  letter-spacing: 1px;
   font-weight: 700;
   text-align: center;
 }
@@ -3666,21 +3671,23 @@ body::after {
   animation-delay: var(--delay, 0s);
 }
 @keyframes cubeIn {
-  from { opacity: 0; transform: translateZ(-12px); }
+  from { opacity: 0; transform: translateZ(-14px); }
   to   { opacity: 1; transform: translateZ(0); }
 }
 
-/* Front face — extruded toward the viewer by --depth */
+/* Front face — pushed forward by --depth */
 .dcube-face {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--top, #818cf8) 0%, var(--topD, #4f46e5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 3px;
+  background: linear-gradient(140deg, var(--top, #818cf8) 0%, var(--topD, #4f46e5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
   transform: translateZ(var(--depth, 0px));
   box-shadow:
     0 0 var(--glow-size, 0) var(--glow, transparent),
-    inset 0 0 6px rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20);
+  backface-visibility: hidden;
 }
 
 /* Right side wall — connects back-right edge to front-right edge */
@@ -3693,7 +3700,8 @@ body::after {
   background: linear-gradient(90deg, var(--mid, #4338ca) 0%, var(--midD, #1e1b4b) 100%);
   transform-origin: 100% 50%;
   transform: rotateY(-90deg);
-  filter: brightness(0.78);
+  filter: brightness(0.55);
+  backface-visibility: hidden;
 }
 
 /* Top wall — connects back-top edge to front-top edge */
@@ -3706,10 +3714,11 @@ body::after {
   background: linear-gradient(180deg, var(--mid, #4f46e5) 0%, var(--midD, #312e81) 100%);
   transform-origin: 50% 0%;
   transform: rotateX(-90deg);
-  filter: brightness(0.92);
+  filter: brightness(0.82);
+  backface-visibility: hidden;
 }
 
-/* Empty / future cells — barely-there outline, no extrusion */
+/* Empty / future cells — flush with the wall, no extrusion */
 .dcube.empty .dcube-face {
   background: rgba(129, 140, 248, 0.04);
   border-color: rgba(129, 140, 248, 0.10);
@@ -3723,14 +3732,15 @@ body::after {
 .dcube.today .dcube-face {
   border-color: rgba(232, 121, 249, 0.55);
   box-shadow:
-    0 0 20px rgba(232, 121, 249, 0.65),
+    0 0 22px rgba(232, 121, 249, 0.65),
     0 0 6px rgba(255, 255, 255, 0.35),
-    inset 0 0 8px rgba(255, 255, 255, 0.16);
+    inset 0 1px 0 rgba(255, 255, 255, 0.30),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
   animation: todayPulse 2.4s ease-in-out infinite;
 }
 @keyframes todayPulse {
-  0%, 100% { box-shadow: 0 0 18px rgba(232, 121, 249, 0.62), 0 0 6px rgba(255, 255, 255, 0.32), inset 0 0 8px rgba(255, 255, 255, 0.14); }
-  50%      { box-shadow: 0 0 28px rgba(232, 121, 249, 0.85), 0 0 10px rgba(255, 255, 255, 0.50), inset 0 0 10px rgba(255, 255, 255, 0.22); }
+  0%, 100% { box-shadow: 0 0 18px rgba(232, 121, 249, 0.62), 0 0 6px rgba(255, 255, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
+  50%      { box-shadow: 0 0 30px rgba(232, 121, 249, 0.85), 0 0 10px rgba(255, 255, 255, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.38), inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
 }
 
 /* ─── Legend strip below the scene ─── */
@@ -3753,16 +3763,16 @@ body::after {
   font-weight: 700;
   text-transform: uppercase;
 }
-/* Legend cubes — flat squares to suggest the voxel idea without rotating */
 .dl-scale { display: flex; align-items: center; gap: 5px; }
 .dl-cube {
   width: 14px;
   height: 14px;
   background: linear-gradient(135deg, var(--c1), var(--c2));
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow:
-    inset 0 0 4px rgba(255, 255, 255, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
     var(--legend-glow, none);
 }
 .dl-cube.dl-lo  { --c1: #5b54e0; --c2: #3730a3; }
@@ -3773,7 +3783,7 @@ body::after {
 /* ─── Responsive: keep voxel grid compact on narrow viewports ─── */
 @media (max-width: 700px) {
   .density-grid,
-  .density-week-labels { grid-template-columns: repeat(5, 48px); }
+  .density-week-labels { grid-template-columns: repeat(5, 44px); }
   .density-grid { grid-template-rows: repeat(7, 26px); }
   .density-day-labels { grid-template-rows: repeat(7, 26px); }
 }
