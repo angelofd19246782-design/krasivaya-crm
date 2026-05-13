@@ -1900,26 +1900,51 @@
         const future = ds > todayStr;
         const isToday = ds === todayStr;
         const intensity = future ? 0 : (count / maxCount);
-        // Eased depth — pow 0.65 lifts mid-range cubes so the 3D effect reads everywhere
         const depth = future ? 0 : Math.round(MIN_DEPTH + Math.pow(intensity, 0.65) * (MAX_DEPTH - MIN_DEPTH));
         const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
         const label = cell.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
         const c = cubeColors(intensity, isToday);
-        // Stagger reveal diagonally
         const delay = ((d + w) * 0.035).toFixed(2) + 's';
 
+        // Deterministic per-cell randomness for animation timing
+        const cellHash = (w * 7 + d) * 7919;
+        const breathDur   = (3.8 + ((cellHash) % 100) / 100 * 2.6).toFixed(2);   // 3.8–6.4s
+        const breathDelay = (((cellHash * 13) % 100) / 20).toFixed(2);            // 0–5s
+        const shineDur    = (5.5 + ((cellHash * 17) % 100) / 50).toFixed(2);      // 5.5–7.5s
+        const shineDelay  = (((cellHash * 23) % 1000) / 100).toFixed(2);          // 0–10s
+
+        // Classify cube state for animation behavior
+        let classes = 'dcube';
         if (future || !c) {
-          cubesHtml.push(`<div class="dcube empty" style="--delay:${delay}" title="${esc(label)}: 0"><div class="dcube-face"></div></div>`);
-        } else {
-          const style = `--depth:${depth}px;--top:${c.top};--topD:${c.topD};--mid:${c.mid};--midD:${c.midD};--glow:${c.glow};--glow-size:${c.glowSize};--delay:${delay}`;
+          classes += ' empty';
           cubesHtml.push(
-            `<div class="dcube${isToday ? ' today' : ''}" style="${style}" title="${esc(label)}: ${count}">` +
+            `<div class="${classes}" style="--delay:${delay}" title="${esc(label)}: 0">` +
+              `<div class="dcube-inner"><div class="dcube-face"></div></div>` +
+            `</div>`
+          );
+          continue;
+        }
+        if (isToday) classes += ' today';
+        else if (intensity >= 0.65) classes += ' lit hot';
+        else if (intensity >= 0.30) classes += ' lit';
+
+        const style =
+          `--depth:${depth}px;` +
+          `--top:${c.top};--topD:${c.topD};--mid:${c.mid};--midD:${c.midD};` +
+          `--glow:${c.glow};--glow-size:${c.glowSize};` +
+          `--delay:${delay};` +
+          `--breath-dur:${breathDur}s;--breath-delay:${breathDelay}s;` +
+          `--shine-dur:${shineDur}s;--shine-delay:${shineDelay}s`;
+
+        cubesHtml.push(
+          `<div class="${classes}" style="${style}" title="${esc(label)}: ${count}">` +
+            `<div class="dcube-inner">` +
               `<div class="dcube-side"></div>` +
               `<div class="dcube-top"></div>` +
               `<div class="dcube-face"></div>` +
-            `</div>`
-          );
-        }
+            `</div>` +
+          `</div>`
+        );
       }
     }
 

@@ -3598,13 +3598,11 @@ body::after {
   flex-shrink: 0;
 }
 
-/* ─── Voxel scene — fluid, full-width, near perspective + isometric tilt ─── */
+/* ─── Voxel scene — FLAT grid, per-cube 3D depth ─── */
 .density-scene {
   position: relative;
   width: 100%;
-  perspective: 1400px;
-  perspective-origin: 50% 50%;
-  padding: 12px 0 14px;
+  padding: 14px 0 16px;
 }
 
 .density-stage {
@@ -3612,17 +3610,14 @@ body::after {
   align-items: flex-start;
   gap: 12px;
   width: 100%;
-  transform-style: preserve-3d;
-  /* Strong enough tilt to actually reveal cube side + top walls */
-  transform: rotateY(-19deg) rotateX(13deg);
-  transform-origin: 50% 50%;
+  /* No global tilt — grid stays a clean rectangular matrix */
 }
 
 /* Day labels — fixed-width column on the left of the grid */
 .density-day-labels {
   display: grid;
   grid-template-rows: repeat(7, 32px);
-  gap: 4px;
+  gap: 5px;
   width: 30px;
   flex-shrink: 0;
   font-family: 'JetBrains Mono', monospace;
@@ -3642,25 +3637,37 @@ body::after {
 .density-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   flex: 1;
   min-width: 0;
-  transform-style: preserve-3d;
 }
 
-/* Fluid: 13 columns stretch to fill all available width */
+/* Fluid 13-column grid — stays perfectly flat and aligned */
 .density-grid {
   display: grid;
   grid-template-columns: repeat(13, 1fr);
   grid-template-rows: repeat(7, 32px);
-  gap: 4px;
-  transform-style: preserve-3d;
+  gap: 5px;
+  position: relative;
+}
+.density-grid::before {
+  /* Ambient back-grid behind cubes — soft, only visible in gaps */
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background:
+    linear-gradient(rgba(129, 140, 248, 0.04) 1px, transparent 1px) 0 0/calc(100%/13) calc(100%/7),
+    linear-gradient(90deg, rgba(129, 140, 248, 0.04) 1px, transparent 1px) 0 0/calc(100%/13) calc(100%/7),
+    radial-gradient(ellipse 60% 70% at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 80%);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .density-week-labels {
   display: grid;
   grid-template-columns: repeat(13, 1fr);
-  gap: 4px;
+  gap: 5px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 8.5px;
   color: var(--t3);
@@ -3679,15 +3686,33 @@ body::after {
 }
 
 /* ─── Individual voxel cube ─── */
+/* Each cube has its OWN perspective, so the GRID stays flat but each cell
+   reads as a small 3D block tilted in-place. */
 .dcube {
   position: relative;
-  transform-style: preserve-3d;
-  animation: cubeIn 0.55s var(--ease) both;
+  perspective: 520px;
+  perspective-origin: 50% 50%;
+  animation: cubeIn 0.5s var(--ease) both;
   animation-delay: var(--delay, 0s);
+  z-index: 1;
 }
+.dcube:hover { z-index: 10; }
+
 @keyframes cubeIn {
-  from { opacity: 0; transform: translateZ(-14px); }
-  to   { opacity: 1; transform: translateZ(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Inner 3D container — holds the cube's tilt + faces */
+.dcube-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(-14deg) rotateX(11deg);
+  transition: transform 0.32s var(--ease);
+}
+.dcube:hover .dcube-inner {
+  transform: rotateY(-14deg) rotateX(11deg) translateZ(7px);
 }
 
 /* Front face — pushed forward by --depth */
@@ -3695,7 +3720,7 @@ body::after {
   position: absolute;
   inset: 0;
   background: linear-gradient(140deg, var(--top, #818cf8) 0%, var(--topD, #4f46e5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 2px;
   transform: translateZ(var(--depth, 0px));
   box-shadow:
@@ -3703,9 +3728,12 @@ body::after {
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 -1px 0 rgba(0, 0, 0, 0.20);
   backface-visibility: hidden;
+  overflow: hidden;
+  transition: filter 0.2s var(--ease);
 }
+.dcube:hover .dcube-face { filter: brightness(1.18); }
 
-/* Right side wall — connects back-right edge to front-right edge */
+/* Right side wall */
 .dcube-side {
   position: absolute;
   top: 0;
@@ -3719,7 +3747,7 @@ body::after {
   backface-visibility: hidden;
 }
 
-/* Top wall — connects back-top edge to front-top edge */
+/* Top wall */
 .dcube-top {
   position: absolute;
   top: 0;
@@ -3733,29 +3761,75 @@ body::after {
   backface-visibility: hidden;
 }
 
-/* Empty / future cells — flush with the wall, no extrusion */
+/* Empty / future cells — keep tilt for matrix consistency, no extrusion */
 .dcube.empty .dcube-face {
-  background: rgba(129, 140, 248, 0.04);
+  background: rgba(129, 140, 248, 0.05);
   border-color: rgba(129, 140, 248, 0.10);
   transform: translateZ(0);
   box-shadow: none;
 }
 .dcube.empty .dcube-side,
 .dcube.empty .dcube-top { display: none; }
+.dcube.empty:hover .dcube-inner {
+  transform: rotateY(-14deg) rotateX(11deg);  /* no extrude on empty hover */
+}
 
-/* Today — pink-magenta highlight with pulsing glow */
+/* ════════════════════════════════════════════════════════════
+   ATMOSPHERIC ANIMATIONS — subtle, slow, premium
+   ════════════════════════════════════════════════════════════ */
+
+/* Lit cubes — continuous soft breathe on the glow */
+.dcube.lit .dcube-face {
+  animation: cubeBreathe var(--breath-dur, 4.6s) ease-in-out infinite;
+  animation-delay: var(--breath-delay, 0s);
+}
+@keyframes cubeBreathe {
+  0%, 100% {
+    box-shadow:
+      0 0 calc(var(--glow-size) * 0.55) var(--glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.20);
+    filter: brightness(0.96);
+  }
+  50% {
+    box-shadow:
+      0 0 calc(var(--glow-size) * 1.35) var(--glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.20);
+    filter: brightness(1.06);
+  }
+}
+
+/* Hot cubes — occasional shine sweep across the front face */
+.dcube.hot .dcube-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 62%
+  );
+  transform: translateX(-115%);
+  animation: cubeShine var(--shine-dur, 7s) ease-in-out infinite;
+  animation-delay: var(--shine-delay, 0s);
+  pointer-events: none;
+}
+@keyframes cubeShine {
+  0%, 68% { transform: translateX(-115%); }
+  82%     { transform: translateX(0); }
+  100%    { transform: translateX(115%); }
+}
+
+/* Today — vivid magenta with pulse */
 .dcube.today .dcube-face {
   border-color: rgba(232, 121, 249, 0.55);
-  box-shadow:
-    0 0 22px rgba(232, 121, 249, 0.65),
-    0 0 6px rgba(255, 255, 255, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.30),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
-  animation: todayPulse 2.4s ease-in-out infinite;
+  animation: todayPulse 2.6s ease-in-out infinite;
 }
 @keyframes todayPulse {
   0%, 100% { box-shadow: 0 0 18px rgba(232, 121, 249, 0.62), 0 0 6px rgba(255, 255, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
-  50%      { box-shadow: 0 0 30px rgba(232, 121, 249, 0.85), 0 0 10px rgba(255, 255, 255, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.38), inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
+  50%      { box-shadow: 0 0 30px rgba(232, 121, 249, 0.92), 0 0 12px rgba(255, 255, 255, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.40), inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
 }
 
 /* ─── Volume legend (used inline in header) ─── */
