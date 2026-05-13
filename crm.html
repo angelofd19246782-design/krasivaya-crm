@@ -236,36 +236,87 @@
         <!-- ════════ ASYMMETRIC GRID: Distribution + Side stack ════════ -->
         <section class="ops-grid-asym">
           <div class="ops-dist-panel">
-            <div class="odp-donut-wrap">
-              <canvas id="donutChart"></canvas>
-              <div id="donutCenter">
-                <div id="donutCenterVal">—</div>
-                <div id="donutCenterLabel" data-en="total" data-ru="всего" data-ko="전체">total</div>
+            <!-- Top row: Donut centerpiece + status legend -->
+            <div class="odp-row-top">
+              <div class="odp-donut-wrap">
+                <canvas id="donutChart"></canvas>
+                <div id="donutCenter">
+                  <div id="donutCenterVal">—</div>
+                  <div id="donutCenterLabel" data-en="total" data-ru="всего" data-ko="전체">total</div>
+                </div>
+              </div>
+              <div>
+                <div class="odp-header">
+                  <div>
+                    <div class="odp-sub" data-en="STATUS MATRIX" data-ru="МАТРИЦА СТАТУСОВ" data-ko="상태 매트릭스">STATUS MATRIX</div>
+                    <div class="odp-title" data-en="Distribution" data-ru="Распределение" data-ko="분포">Distribution</div>
+                  </div>
+                </div>
+                <div class="chart-legend odp-legend">
+                  <div class="legend-item">
+                    <div class="legend-left"><span class="legend-dot" style="background:#10b981;color:#10b981"></span><span class="legend-label" data-en="Completed" data-ru="Завершена" data-ko="완료">Completed</span></div>
+                    <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barCompleted" style="width:0%"></div></div><span class="legend-pct" id="legendCompletedPct">—</span><span class="legend-val" id="legendCompleted">—</span></div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-left"><span class="legend-dot" style="background:#3b82f6;color:#3b82f6"></span><span class="legend-label" data-en="In Progress" data-ru="В работе" data-ko="처리 중">In Progress</span></div>
+                    <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barInProgress" style="width:0%"></div></div><span class="legend-pct" id="legendInProgressPct">—</span><span class="legend-val" id="legendInProgress">—</span></div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-left"><span class="legend-dot" style="background:#f59e0b;color:#f59e0b"></span><span class="legend-label" data-en="New" data-ru="Новые" data-ko="신규">New</span></div>
+                    <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barNew" style="width:0%"></div></div><span class="legend-pct" id="legendNewPct">—</span><span class="legend-val" id="legendNew">—</span></div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-left"><span class="legend-dot" style="background:#f43f5e;color:#f43f5e"></span><span class="legend-label" data-en="Incomplete" data-ru="Не завершена" data-ko="미완료">Incomplete</span></div>
+                    <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barIncomplete" style="width:0%"></div></div><span class="legend-pct" id="legendIncompletePct">—</span><span class="legend-val" id="legendIncomplete">—</span></div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div>
-              <div class="odp-header">
-                <div>
-                  <div class="odp-sub" data-en="STATUS MATRIX" data-ru="МАТРИЦА СТАТУСОВ" data-ko="상태 매트릭스">STATUS MATRIX</div>
-                  <div class="odp-title" data-en="Distribution" data-ru="Распределение" data-ko="분포">Distribution</div>
+
+            <!-- Bottom row: 3 supporting micro-analytics modules -->
+            <div class="odp-row-bottom">
+              <!-- Module 1: Resolution velocity (radial arc) -->
+              <div class="odp-micro">
+                <div class="odp-micro-label" data-en="RESOLUTION VELOCITY" data-ru="СКОРОСТЬ РЕШЕНИЯ" data-ko="해결 속도">RESOLUTION VELOCITY</div>
+                <div class="odp-radial-mod">
+                  <svg class="odp-radial-svg" viewBox="0 0 64 64">
+                    <defs>
+                      <linearGradient id="radialGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#6366f1"/>
+                        <stop offset="50%" stop-color="#818cf8"/>
+                        <stop offset="100%" stop-color="#c084fc"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="odp-radial-track" cx="32" cy="32" r="26"/>
+                    <circle class="odp-radial-arc" id="opdRadialArc" cx="32" cy="32" r="26" stroke-dasharray="0 163"/>
+                  </svg>
+                  <div class="odp-radial-text">
+                    <div class="odp-radial-val" id="opdRadialVal">—</div>
+                    <div class="odp-radial-sub" data-en="COMPLETED" data-ru="ЗАВЕРШЕНО" data-ko="완료">COMPLETED</div>
+                  </div>
                 </div>
               </div>
-              <div class="chart-legend odp-legend">
-                <div class="legend-item">
-                  <div class="legend-left"><span class="legend-dot" style="background:#10b981;color:#10b981"></span><span class="legend-label" data-en="Completed" data-ru="Завершена" data-ko="완료">Completed</span></div>
-                  <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barCompleted" style="width:0%"></div></div><span class="legend-pct" id="legendCompletedPct">—</span><span class="legend-val" id="legendCompleted">—</span></div>
+
+              <!-- Module 2: Status pulse (4 dots + values) -->
+              <div class="odp-micro">
+                <div class="odp-micro-label" data-en="STATUS PULSE" data-ru="ПУЛЬС СТАТУСОВ" data-ko="상태 펄스">STATUS PULSE</div>
+                <div class="odp-pulse-row">
+                  <div class="opp-cell"><div class="opp-dot" style="background:#f59e0b;color:#f59e0b"></div><div class="opp-val" id="oppNew">—</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#3b82f6;color:#3b82f6"></div><div class="opp-val" id="oppInProgress">—</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#10b981;color:#10b981"></div><div class="opp-val" id="oppCompleted">—</div></div>
+                  <div class="opp-cell"><div class="opp-dot" style="background:#f43f5e;color:#f43f5e"></div><div class="opp-val" id="oppIncomplete">—</div></div>
                 </div>
-                <div class="legend-item">
-                  <div class="legend-left"><span class="legend-dot" style="background:#3b82f6;color:#3b82f6"></span><span class="legend-label" data-en="In Progress" data-ru="В работе" data-ko="처리 중">In Progress</span></div>
-                  <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barInProgress" style="width:0%"></div></div><span class="legend-pct" id="legendInProgressPct">—</span><span class="legend-val" id="legendInProgress">—</span></div>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-left"><span class="legend-dot" style="background:#f59e0b;color:#f59e0b"></span><span class="legend-label" data-en="New" data-ru="Новые" data-ko="신규">New</span></div>
-                  <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barNew" style="width:0%"></div></div><span class="legend-pct" id="legendNewPct">—</span><span class="legend-val" id="legendNew">—</span></div>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-left"><span class="legend-dot" style="background:#f43f5e;color:#f43f5e"></span><span class="legend-label" data-en="Incomplete" data-ru="Не завершена" data-ko="미완료">Incomplete</span></div>
-                  <div class="legend-right"><div class="legend-bar-wrap"><div class="legend-bar-fill" id="barIncomplete" style="width:0%"></div></div><span class="legend-pct" id="legendIncompletePct">—</span><span class="legend-val" id="legendIncomplete">—</span></div>
+              </div>
+
+              <!-- Module 3: 7-day activity bars -->
+              <div class="odp-micro">
+                <div class="odp-micro-label" data-en="7D ACTIVITY" data-ru="АКТИВНОСТЬ · 7Д" data-ko="7일 활동">7D ACTIVITY</div>
+                <div class="odp-bars-mod">
+                  <div class="odp-bars" id="odpTrendBars"></div>
+                  <div class="odp-bars-meta">
+                    <span data-en="6d AGO" data-ru="6Д НАЗАД" data-ko="6일 전">6d AGO</span>
+                    <span data-en="TODAY" data-ru="СЕГОДНЯ" data-ko="오늘">TODAY</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1335,27 +1386,47 @@
   }
 
   // ─── Radar dot rendering ───
+  // Distributes signals organically across rings using a golden-angle spiral.
+  // Newer signals tend toward the center, older toward the outer rings,
+  // with per-signal jitter so the layout never feels mechanical.
   function renderRadarDots(apps) {
     const host = document.getElementById('radarDots');
     if (!host) return;
     host.innerHTML = '';
-    // Show up to 28 most-recent active dots, positioned by age (recent = inner, old = outer)
-    const live = apps.filter(a => !a.deleted_at).slice(0, 28);
-    const now = Date.now();
-    const maxAgeMs = 30 * 24 * 60 * 60 * 1000;
+
+    // Take ~20 most recent live signals — enough to feel populated, sparse enough to breathe
+    const live = apps.filter(a => !a.deleted_at)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 20);
+    if (!live.length) return;
+
+    const PHI_DEG = 137.508; // golden angle — natural sunflower spread
+
     live.forEach((a, idx) => {
-      const age = Math.min(maxAgeMs, now - new Date(a.created_at).getTime());
-      const ageRatio = age / maxAgeMs;                  // 0 (now) → 1 (30d old)
-      const radius = 12 + ageRatio * 38;                // 12% → 50% from center
-      // Spread evenly with stable angle from id hash
-      const angle = ((a.id * 73 + a.queue_number * 31) % 360) * Math.PI / 180;
+      // Rank-based radius with a gentle curve that biases dots OUTWARD,
+      // so the inner zone is never crowded.
+      const rankRatio = idx / Math.max(1, live.length - 1);   // 0 (newest) → 1 (oldest)
+      const eased = Math.pow(rankRatio, 0.55);                // outer-biased ease
+      const base  = 14 + eased * 28;                          // 14% → 42% offset from center
+
+      // Deterministic jitter from id so positions are stable across renders
+      const jitter = ((a.id * 2654435761) % 1024) / 1024 - 0.5;
+      const radius = Math.max(10, Math.min(45, base + jitter * 6));
+
+      // Golden-angle increment + stable per-id offset for organic angular spread
+      const idOffset = (a.id * 17 + a.queue_number * 7) % 360;
+      const angleDeg = (idx * PHI_DEG + idOffset * 0.4) % 360;
+      const angle = angleDeg * Math.PI / 180;
+
       const cx = 50 + Math.cos(angle) * radius;
       const cy = 50 + Math.sin(angle) * radius;
+
       const dot = document.createElement('div');
       dot.className = 'radar-dot d-' + a.status;
       dot.style.left = cx + '%';
       dot.style.top  = cy + '%';
-      dot.style.animationDelay = (idx * 0.15) + 's';
+      // Stagger the fade animation so dots don't all pulse in unison
+      dot.style.animationDelay = ((idx * 0.18) % 2.5) + 's';
       dot.title = `#${a.id} ${a.name} · ${a.status}`;
       dot.addEventListener('click', () => openDrawer(a.id));
       dot.style.cursor = 'pointer';
@@ -1413,11 +1484,55 @@
     buildLineChart(chartPeriod);
     buildDonutChart(active);
     buildPrimarySpark();
+    buildDistMicros(active, _lastDaily);
     buildInsightCards();
     buildSourceCard(_lastBySource);
     buildStackedChart();
     buildTodayGlance();
     buildActivityHeatmap();
+  }
+
+  // ─── Distribution panel — supporting micro-analytics modules ───
+  function buildDistMicros(active, daily) {
+    // Module 1: Resolution velocity (radial arc)
+    const total = active.total || 0;
+    const pct = total > 0 ? Math.round((active.completed || 0) / total * 100) : 0;
+    const arcEl = document.getElementById('opdRadialArc');
+    if (arcEl) {
+      const r = 26;
+      const circ = 2 * Math.PI * r;            // ≈ 163
+      const arcLen = (pct / 100) * circ;
+      arcEl.setAttribute('stroke-dasharray', `${arcLen.toFixed(2)} ${(circ - arcLen).toFixed(2)}`);
+    }
+    setText('opdRadialVal', pct + '%');
+
+    // Module 2: Status pulse counts
+    setText('oppNew',         active.new ?? 0);
+    setText('oppInProgress',  active.in_progress ?? 0);
+    setText('oppCompleted',   active.completed ?? 0);
+    setText('oppIncomplete',  active.incomplete ?? 0);
+
+    // Module 3: 7-day activity bars
+    const host = document.getElementById('odpTrendBars');
+    if (host) {
+      const dayMap = {};
+      (daily || []).forEach(d => { dayMap[d.day] = d.count; });
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const days = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const ds = d.toISOString().slice(0, 10);
+        days.push({ day: ds, count: dayMap[ds] || 0 });
+      }
+      const max = Math.max(...days.map(d => d.count), 1);
+      const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
+      host.innerHTML = days.map(d => {
+        const h = Math.max(4, Math.round(d.count / max * 42));
+        const isToday = d.day === todayStr;
+        const label = new Date(d.day + 'T12:00:00').toLocaleDateString(locale, { weekday: 'short', day: 'numeric' });
+        return `<div class="odp-bar${isToday ? ' today' : ''}" style="height:${h}px" title="${label}: ${d.count}"></div>`;
+      }).join('');
+    }
   }
 
   // ─── Primary metric sparkline (in hero) ───

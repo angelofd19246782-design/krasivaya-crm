@@ -3222,19 +3222,18 @@ body::after {
   margin-bottom: 22px;
 }
 
-/* Big "Distribution" panel — donut breaks out of card */
+/* Big "Distribution" panel — donut + supporting micro-analytics modules */
 .ops-dist-panel {
   position: relative;
   border-radius: 20px;
-  padding: 24px 28px;
+  padding: 22px 26px 22px;
   background:
     radial-gradient(ellipse 60% 80% at 90% 50%, rgba(99,102,241,0.08) 0%, transparent 60%),
     linear-gradient(180deg, rgba(20,22,40,0.78) 0%, rgba(12,14,26,0.78) 100%);
   border: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 24px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   overflow: hidden;
 }
 .ops-dist-panel::before {
@@ -3244,9 +3243,20 @@ body::after {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
 }
+
+/* Top row: donut centerpiece + status legend */
+.odp-row-top {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 28px;
+  padding: 6px 0 20px;
+  border-bottom: 1px dashed var(--line);
+  align-items: center;
+}
+
 .odp-donut-wrap {
   position: relative;
-  width: 200px;
+  width: 220px;
   height: 200px;
   display: flex;
   align-items: center;
@@ -3262,6 +3272,193 @@ body::after {
 }
 .odp-title { font-size: 16px; font-weight: 800; color: var(--t1); letter-spacing: -0.4px; }
 .odp-sub { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--t3); letter-spacing: 1.4px; text-transform: uppercase; font-weight: 700; }
+
+/* Bottom row: 3 supporting micro-analytics modules */
+.odp-row-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 12px;
+  padding-top: 18px;
+}
+
+.odp-micro {
+  position: relative;
+  padding: 13px 15px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.odp-micro:hover {
+  border-color: rgba(129, 140, 248, 0.28);
+  background: rgba(255, 255, 255, 0.035);
+}
+.odp-micro::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.32), transparent);
+  pointer-events: none;
+}
+
+.odp-micro-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 1.3px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.odp-micro-label::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--indigo-2);
+  box-shadow: 0 0 6px var(--indigo-2);
+}
+
+/* ─── Module 1: Resolution velocity (radial arc) ─── */
+.odp-radial-mod {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+.odp-radial-svg {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.35));
+}
+.odp-radial-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 5;
+}
+.odp-radial-arc {
+  fill: none;
+  stroke: url(#radialGrad);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.9s var(--ease);
+}
+.odp-radial-text { display: flex; flex-direction: column; gap: 3px; }
+.odp-radial-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.6px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff 0%, rgba(199, 210, 254, 0.85) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.odp-radial-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ─── Module 2: Status pulse (4 dots) ─── */
+.odp-pulse-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  flex: 1;
+  align-items: center;
+}
+.opp-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 0 2px;
+  border-radius: 8px;
+  transition: background 0.15s var(--ease);
+}
+.opp-cell:hover { background: rgba(255, 255, 255, 0.04); }
+.opp-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 10px currentColor;
+  animation: pulseSoft 2.6s ease-in-out infinite;
+}
+.opp-cell:nth-child(2) .opp-dot { animation-delay: 0.4s; }
+.opp-cell:nth-child(3) .opp-dot { animation-delay: 0.8s; }
+.opp-cell:nth-child(4) .opp-dot { animation-delay: 1.2s; }
+.opp-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 0%, transparent 60%);
+  opacity: 0.45;
+  pointer-events: none;
+}
+@keyframes pulseSoft {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 8px currentColor; }
+  50%      { transform: scale(1.25); box-shadow: 0 0 14px currentColor; }
+}
+.opp-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--t1);
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* ─── Module 3: 7-day activity bars ─── */
+.odp-bars-mod { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.odp-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  align-items: flex-end;
+  height: 46px;
+}
+.odp-bar {
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.85) 0%, rgba(99, 102, 241, 0.45) 100%);
+  border-radius: 3px 3px 1px 1px;
+  min-height: 2px;
+  transition: height 0.8s var(--ease), background 0.18s var(--ease);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.32);
+  position: relative;
+  cursor: default;
+}
+.odp-bar:hover { filter: brightness(1.15); }
+.odp-bar.today {
+  background: linear-gradient(180deg, #c084fc 0%, #818cf8 100%);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.55);
+}
+.odp-bars-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--t3);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
 
 /* Side column — Today + Source as vertical stack */
 .ops-side-col {
