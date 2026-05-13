@@ -1856,36 +1856,37 @@
     startDate.setDate(today.getDate() - daysSinceMonday - (WEEKS - 1) * 7);
 
     const maxCount = Math.max(...Object.values(countMap), 1);
-    const MAX_DEPTH = 34; // px — depth visible at rotateY(-22°)/rotateX(13°)
-    const MIN_DEPTH = 4;  // every active cube has at least this much depth
+    // Depth range matches --d-max in CSS (18px) for clean geometry
+    const MAX_DEPTH = 17;
+    const MIN_DEPTH = 4;
 
-    // 4 color tiers + today highlight
+    // 4 color tiers + today highlight — glow softened, geometry carries the effect
     function cubeColors(intensity, isToday) {
       if (isToday) return {
         top: '#f5d0fe', topD: '#e879f9',
         mid: '#c026d3', midD: '#86198f',
-        glow: 'rgba(232,121,249,0.70)', glowSize: '18px',
+        glow: 'rgba(232,121,249,0.50)', glowSize: '11px',
       };
       if (intensity < 0.05) return null; // empty
       if (intensity < 0.30) return {
         top: '#5b54e0', topD: '#3730a3',
         mid: '#312e81', midD: '#1e1b4b',
-        glow: 'rgba(99,102,241,0.28)', glowSize: '9px',
+        glow: 'rgba(99,102,241,0.20)', glowSize: '5px',
       };
       if (intensity < 0.60) return {
         top: '#818cf8', topD: '#5b54e0',
         mid: '#4338ca', midD: '#1e1b4b',
-        glow: 'rgba(129,140,248,0.48)', glowSize: '13px',
+        glow: 'rgba(129,140,248,0.32)', glowSize: '7px',
       };
       if (intensity < 0.85) return {
         top: '#a78bfa', topD: '#7c3aed',
         mid: '#5b21b6', midD: '#3c1361',
-        glow: 'rgba(168,85,247,0.62)', glowSize: '17px',
+        glow: 'rgba(168,85,247,0.44)', glowSize: '10px',
       };
       return {
         top: '#e879f9', topD: '#a21caf',
         mid: '#7e22ce', midD: '#3b0764',
-        glow: 'rgba(232,121,249,0.74)', glowSize: '22px',
+        glow: 'rgba(232,121,249,0.54)', glowSize: '13px',
       };
     }
 
@@ -1919,7 +1920,7 @@
           classes += ' empty';
           cubesHtml.push(
             `<div class="${classes}" style="--delay:${delay}" title="${esc(label)}: 0">` +
-              `<div class="dcube-inner"><div class="dcube-face"></div></div>` +
+              `<div class="dcube-face"></div>` +
             `</div>`
           );
           continue;
@@ -1938,11 +1939,9 @@
 
         cubesHtml.push(
           `<div class="${classes}" style="${style}" title="${esc(label)}: ${count}">` +
-            `<div class="dcube-inner">` +
-              `<div class="dcube-side"></div>` +
-              `<div class="dcube-top"></div>` +
-              `<div class="dcube-face"></div>` +
-            `</div>` +
+            `<div class="dcube-side"></div>` +
+            `<div class="dcube-top"></div>` +
+            `<div class="dcube-face"></div>` +
           `</div>`
         );
       }

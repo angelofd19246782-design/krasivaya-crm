@@ -3616,7 +3616,7 @@ body::after {
 /* Day labels — fixed-width column on the left of the grid */
 .density-day-labels {
   display: grid;
-  grid-template-rows: repeat(7, 32px);
+  grid-template-rows: repeat(7, 42px);
   gap: 5px;
   width: 30px;
   flex-shrink: 0;
@@ -3646,7 +3646,7 @@ body::after {
 .density-grid {
   display: grid;
   grid-template-columns: repeat(13, 1fr);
-  grid-template-rows: repeat(7, 32px);
+  grid-template-rows: repeat(7, 42px);
   gap: 5px;
   position: relative;
 }
@@ -3685,13 +3685,12 @@ body::after {
   text-shadow: 0 0 8px rgba(232, 121, 249, 0.45);
 }
 
-/* ─── Individual voxel cube ─── */
-/* Each cube has its OWN perspective, so the GRID stays flat but each cell
-   reads as a small 3D block tilted in-place. */
+/* ─── Individual voxel cube — pure 2D isometric, identical geometry ─── */
+/* Each cube uses the EXACT same -45° skews → mathematically consistent
+   across the entire matrix. No per-cube perspective, no warping. */
 .dcube {
   position: relative;
-  perspective: 520px;
-  perspective-origin: 50% 50%;
+  --d-max: 18px;         /* reserved space at top + right for the extruded faces */
   animation: cubeIn 0.5s var(--ease) both;
   animation-delay: var(--delay, 0s);
   z-index: 1;
@@ -3703,100 +3702,95 @@ body::after {
   to   { opacity: 1; }
 }
 
-/* Inner 3D container — holds the cube's tilt + faces */
-.dcube-inner {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: rotateY(-14deg) rotateX(11deg);
-  transition: transform 0.32s var(--ease);
-}
-.dcube:hover .dcube-inner {
-  transform: rotateY(-14deg) rotateX(11deg) translateZ(7px);
-}
-
-/* Front face — pushed forward by --depth */
+/* Front face — anchored to bottom-left, leaves --d-max at top and right
+   for the top + side parallelograms. Same position in every cube. */
 .dcube-face {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: var(--d-max);
+  top: var(--d-max);
+  bottom: 0;
   background: linear-gradient(140deg, var(--top, #818cf8) 0%, var(--topD, #4f46e5) 100%);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 2px;
-  transform: translateZ(var(--depth, 0px));
   box-shadow:
     0 0 var(--glow-size, 0) var(--glow, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.20);
-  backface-visibility: hidden;
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
   overflow: hidden;
   transition: filter 0.2s var(--ease);
 }
-.dcube:hover .dcube-face { filter: brightness(1.18); }
 
-/* Right side wall */
-.dcube-side {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--depth, 0px);
-  height: 100%;
-  background: linear-gradient(90deg, var(--mid, #4338ca) 0%, var(--midD, #1e1b4b) 100%);
-  transform-origin: 100% 50%;
-  transform: rotateY(-90deg);
-  filter: brightness(0.55);
-  backface-visibility: hidden;
-}
-
-/* Top wall */
+/* Top face — parallelogram slanted -45° from front-top edge to back-top edge.
+   Bottom edge sits exactly on the front face's top edge (y = --d-max).
+   When depth = --d-max, the top edge reaches y = 0 (cell top). */
 .dcube-top {
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% - var(--d-max));
+  top: calc(var(--d-max) - var(--depth, 0px));
   height: var(--depth, 0px);
-  background: linear-gradient(180deg, var(--mid, #4f46e5) 0%, var(--midD, #312e81) 100%);
-  transform-origin: 50% 0%;
-  transform: rotateX(-90deg);
-  filter: brightness(0.82);
-  backface-visibility: hidden;
+  background: linear-gradient(180deg, var(--top, #818cf8) 0%, var(--mid, #4338ca) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  filter: brightness(1.05);
+  transform: skewX(-45deg);
+  transform-origin: 0% 100%;
 }
 
-/* Empty / future cells — keep tilt for matrix consistency, no extrusion */
+/* Side face — parallelogram slanted -45° from front-right edge to back-right edge.
+   Left edge sits exactly on the front face's right edge (x = 100% - --d-max).
+   When depth = --d-max, the right edge reaches x = 100% (cell right). */
+.dcube-side {
+  position: absolute;
+  left: calc(100% - var(--d-max));
+  top: var(--d-max);
+  width: var(--depth, 0px);
+  height: calc(100% - var(--d-max));
+  background: linear-gradient(90deg, var(--mid, #4338ca) 0%, var(--midD, #1e1b4b) 100%);
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  filter: brightness(0.62);
+  transform: skewY(-45deg);
+  transform-origin: 0% 0%;
+}
+
+/* Hover — brightness lift only (geometry stays precise) */
+.dcube:hover .dcube-face { filter: brightness(1.18); }
+.dcube:hover .dcube-top  { filter: brightness(1.20); }
+.dcube:hover .dcube-side { filter: brightness(0.78); }
+
+/* Empty cells — keep front-face position consistent, no extrusion */
 .dcube.empty .dcube-face {
   background: rgba(129, 140, 248, 0.05);
   border-color: rgba(129, 140, 248, 0.10);
-  transform: translateZ(0);
   box-shadow: none;
 }
 .dcube.empty .dcube-side,
 .dcube.empty .dcube-top { display: none; }
-.dcube.empty:hover .dcube-inner {
-  transform: rotateY(-14deg) rotateX(11deg);  /* no extrude on empty hover */
-}
+.dcube.empty:hover .dcube-face { filter: none; }
 
 /* ════════════════════════════════════════════════════════════
    ATMOSPHERIC ANIMATIONS — subtle, slow, premium
    ════════════════════════════════════════════════════════════ */
 
-/* Lit cubes — continuous soft breathe on the glow */
+/* Lit cubes — gentle continuous breathe (subtle, geometry-led) */
 .dcube.lit .dcube-face {
-  animation: cubeBreathe var(--breath-dur, 4.6s) ease-in-out infinite;
+  animation: cubeBreathe var(--breath-dur, 5s) ease-in-out infinite;
   animation-delay: var(--breath-delay, 0s);
 }
 @keyframes cubeBreathe {
   0%, 100% {
     box-shadow:
-      0 0 calc(var(--glow-size) * 0.55) var(--glow),
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.20);
-    filter: brightness(0.96);
+      0 0 calc(var(--glow-size) * 0.7) var(--glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+    filter: brightness(0.98);
   }
   50% {
     box-shadow:
-      0 0 calc(var(--glow-size) * 1.35) var(--glow),
+      0 0 calc(var(--glow-size) * 1.25) var(--glow),
       inset 0 1px 0 rgba(255, 255, 255, 0.24),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.20);
-    filter: brightness(1.06);
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+    filter: brightness(1.04);
   }
 }
 
@@ -3867,12 +3861,16 @@ body::after {
   .density-grid,
   .density-week-labels { grid-template-columns: repeat(8, 1fr); }
   .density-week-labels span:nth-child(odd) { visibility: hidden; }
+  .dcube { --d-max: 14px; }
+  .density-grid { grid-template-rows: repeat(7, 36px); }
+  .density-day-labels { grid-template-rows: repeat(7, 36px); }
 }
 @media (max-width: 600px) {
   .density-grid,
   .density-week-labels { grid-template-columns: repeat(6, 1fr); }
-  .density-grid { grid-template-rows: repeat(7, 26px); }
-  .density-day-labels { grid-template-rows: repeat(7, 26px); }
+  .dcube { --d-max: 12px; }
+  .density-grid { grid-template-rows: repeat(7, 32px); }
+  .density-day-labels { grid-template-rows: repeat(7, 32px); }
   .odb-legend .dl-label:last-of-type { display: none; }
 }
 
