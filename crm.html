@@ -362,6 +362,31 @@
                 </div>
               </div>
             </div>
+
+            <!-- Bottom strip: monthly delta + weekday cadence + recent live feed -->
+            <div class="odp-row-strip">
+              <div class="odp-strip-mod">
+                <div class="odp-strip-label" data-en="MONTHLY · 30D" data-ru="МЕСЯЦ · 30Д" data-ko="월간 · 30일">MONTHLY · 30D</div>
+                <div class="odp-month-val" id="odpMonthVal">—</div>
+                <div class="odp-month-trend flat" id="odpMonthTrend">—</div>
+                <div class="odp-month-sub" data-en="vs previous 30 days" data-ru="vs предыдущие 30 дней" data-ko="이전 30일 대비">vs previous 30 days</div>
+              </div>
+
+              <div class="odp-strip-mod">
+                <div class="odp-strip-label" data-en="WEEKDAY CADENCE" data-ru="ДНИ НЕДЕЛИ" data-ko="요일별 패턴">WEEKDAY CADENCE</div>
+                <div class="odp-cadence-bars" id="odpCadenceBars"></div>
+                <div class="odp-cad-labels" id="odpCadenceLabels"></div>
+                <div class="odp-cad-foot">
+                  <span data-en="AVG/DOW · 8w" data-ru="СР/ДЕНЬ · 8нед" data-ko="요일 평균 · 8주">AVG/DOW · 8w</span>
+                  <span data-en="PEAK" data-ru="ПИК" data-ko="피크">PEAK <strong id="odpCadencePeak">—</strong></span>
+                </div>
+              </div>
+
+              <div class="odp-strip-mod">
+                <div class="odp-strip-label live" data-en="RECENT · LIVE" data-ru="ПОСЛЕДНИЕ · LIVE" data-ko="최근 · 라이브">RECENT · LIVE</div>
+                <div class="odp-feed-mini" id="odpFeedMini"></div>
+              </div>
+            </div>
           </div>
 
           <div class="ops-side-col">
@@ -1434,6 +1459,7 @@
       renderRadarDots(apps);
       renderLiveFeed(apps.slice(0, 8));
       renderOpsRecent(apps.slice(0, 8));
+      renderDistMiniFeed(apps);
     }
   }
 
@@ -1668,6 +1694,86 @@
     document.getElementById('odpWaveStrokePath')?.setAttribute('d', stroke);
     document.getElementById('odpWaveFillPath')?.setAttribute('d', fill);
     setText('odpWavePeak', maxWave);
+
+    // ─── Strip module 1: Monthly delta (last 30 vs prev 30) ───
+    let last30Sum = 0, prev30Sum = 0;
+    for (let i = 0; i < 60; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const c = dayMap[d.toISOString().slice(0, 10)] || 0;
+      if (i < 30) last30Sum += c; else prev30Sum += c;
+    }
+    setText('odpMonthVal', last30Sum);
+    const monthTrendEl = document.getElementById('odpMonthTrend');
+    if (monthTrendEl) {
+      if (prev30Sum > 0) {
+        const delta = Math.round((last30Sum - prev30Sum) / prev30Sum * 100);
+        const cls = delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat';
+        const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '=';
+        const moLbl = L.lang === 'ru' ? 'мес' : L.lang === 'ko' ? '월' : 'mo';
+        monthTrendEl.className = 'odp-month-trend ' + cls;
+        monthTrendEl.textContent = `${arrow} ${delta > 0 ? '+' : ''}${delta}% / ${moLbl}`;
+      } else {
+        monthTrendEl.className = 'odp-month-trend flat';
+        monthTrendEl.textContent = '— mo';
+      }
+    }
+
+    // ─── Strip module 2: Weekday cadence (avg by day of week over 8 weeks) ───
+    const dowSum = [0, 0, 0, 0, 0, 0, 0];
+    const dowCount = [0, 0, 0, 0, 0, 0, 0];
+    for (let i = 0; i < 56; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const dowJs = d.getDay();
+      const dow = dowJs === 0 ? 6 : dowJs - 1;     // Mon=0 … Sun=6
+      dowSum[dow]   += dayMap[d.toISOString().slice(0, 10)] || 0;
+      dowCount[dow] += 1;
+    }
+    const dowAvg = dowSum.map((s, i) => dowCount[i] > 0 ? s / dowCount[i] : 0);
+    const peakIdx = dowAvg.indexOf(Math.max(...dowAvg));
+    const maxAvg = Math.max(...dowAvg, 1);
+    const dowLabels = L.lang === 'ru'
+      ? ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС']
+      : L.lang === 'ko'
+      ? ['월','화','수','목','금','토','일']
+      : ['MO','TU','WE','TH','FR','SA','SU'];
+
+    const barsEl = document.getElementById('odpCadenceBars');
+    if (barsEl) {
+      barsEl.innerHTML = dowAvg.map((v, i) => {
+        const h = Math.max(3, Math.round(v / maxAvg * 28));
+        const isPeak = i === peakIdx;
+        return `<div class="odp-cad-bar${isPeak ? ' peak' : ''}" style="height:${h}px" title="${dowLabels[i]}: ${v.toFixed(1)} avg/day"></div>`;
+      }).join('');
+    }
+    const labelsEl = document.getElementById('odpCadenceLabels');
+    if (labelsEl) {
+      labelsEl.innerHTML = dowLabels.map((lbl, i) =>
+        `<span${i === peakIdx ? ' class="peak"' : ''}>${lbl}</span>`
+      ).join('');
+    }
+    setText('odpCadencePeak', dowLabels[peakIdx]);
+  }
+
+  // ─── Strip module 3: mini live feed (called separately — needs apps) ───
+  function renderDistMiniFeed(apps) {
+    const host = document.getElementById('odpFeedMini');
+    if (!host) return;
+    const recent = (apps || []).slice(0, 4);
+    if (!recent.length) {
+      host.innerHTML = `<div style="font-size:10.5px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding:8px 0">— no signals —</div>`;
+      return;
+    }
+    const colors = { new: '#f59e0b', in_progress: '#3b82f6', completed: '#10b981', incomplete: '#f43f5e' };
+    const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
+    host.innerHTML = recent.map(a => {
+      const time = new Date(a.created_at).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+      const color = colors[a.status] || '#9292b2';
+      return `<div class="odp-feed-row" onclick="openDrawer(${a.id})">
+        <span class="odp-feed-time">${time}</span>
+        <span class="odp-feed-name">${esc(a.name)}</span>
+        <span class="odp-feed-dot" style="background:${color};color:${color}"></span>
+      </div>`;
+    }).join('');
   }
 
   // ─── Primary metric sparkline (in hero) ───

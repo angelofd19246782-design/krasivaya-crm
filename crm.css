@@ -3456,7 +3456,200 @@ body::after {
   display: grid;
   grid-template-columns: 1.3fr 0.85fr 1.55fr;
   gap: 11px;
-  padding-top: 20px;
+  padding-top: 18px;
+}
+
+/* ═══ Bottom strip — Monthly delta / Weekday cadence / Recent feed ═══ */
+.odp-row-strip {
+  display: grid;
+  grid-template-columns: 0.9fr 1.2fr 1.25fr;
+  gap: 11px;
+  padding-top: 14px;
+  margin-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.odp-strip-mod {
+  position: relative;
+  padding: 12px 14px 13px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.odp-strip-mod:hover {
+  border-color: rgba(129, 140, 248, 0.30);
+  background: rgba(255, 255, 255, 0.038);
+}
+.odp-strip-mod::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.32), transparent);
+  pointer-events: none;
+}
+
+.odp-strip-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 1.3px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.odp-strip-label::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--indigo-2);
+  box-shadow: 0 0 5px var(--indigo-2);
+}
+.odp-strip-label.live::before {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+/* ─── Module: Monthly delta ─── */
+.odp-month-val {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  background: linear-gradient(180deg, #fff 0%, rgba(199, 210, 254, 0.82) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.odp-month-trend {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.odp-month-trend.up   { color: #34d399; }
+.odp-month-trend.down { color: #fb7185; }
+.odp-month-trend.flat { color: var(--t3); }
+.odp-month-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+/* ─── Module: Weekday cadence ─── */
+.odp-cadence-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  align-items: flex-end;
+  height: 32px;
+  margin-top: 2px;
+}
+.odp-cad-bar {
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.60) 0%, rgba(99, 102, 241, 0.22) 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(129, 140, 248, 0.28);
+  min-height: 2px;
+  transition: height 0.7s var(--ease);
+}
+.odp-cad-bar.peak {
+  background: linear-gradient(180deg, #c084fc 0%, #818cf8 100%);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.55);
+}
+.odp-cad-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--t3);
+  letter-spacing: 0.3px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 3px;
+}
+.odp-cad-labels .peak {
+  color: #c084fc;
+  text-shadow: 0 0 6px rgba(192, 132, 252, 0.5);
+}
+.odp-cad-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5px;
+  color: var(--t3);
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.odp-cad-foot strong { color: var(--indigo-2); font-size: 10px; }
+
+/* ─── Module: Recent feed mini ─── */
+.odp-feed-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 2px;
+}
+.odp-feed-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
+  font-size: 11.5px;
+  color: var(--t2);
+  border-bottom: 1px dashed var(--line);
+  cursor: pointer;
+  transition: color 0.14s var(--ease);
+}
+.odp-feed-row:last-child { border-bottom: none; }
+.odp-feed-row:hover { color: var(--t1); }
+.odp-feed-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: var(--t3);
+  letter-spacing: 0.3px;
+}
+.odp-feed-name {
+  font-weight: 600;
+  color: var(--t1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11.5px;
+}
+.odp-feed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .odp-row-strip { grid-template-columns: 1fr 1fr; }
+  .odp-row-strip > :nth-child(3) { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .odp-row-strip { grid-template-columns: 1fr; }
+  .odp-row-strip > :nth-child(3) { grid-column: 1; }
 }
 
 .odp-micro {
