@@ -349,26 +349,26 @@
           </div>
         </section>
 
-        <!-- ════════ ACTIVITY LANDSCAPE — 3D operational density ════════ -->
+        <!-- ════════ ACTIVITY LANDSCAPE — voxel wall ════════ -->
         <section class="ops-density-band">
           <div class="odb-header">
             <div class="odb-header-left">
               <div class="odb-tag" data-en="OPERATIONAL DENSITY · 3D" data-ru="ПЛОТНОСТЬ ОПЕРАЦИЙ · 3D" data-ko="운영 밀도 · 3D">OPERATIONAL DENSITY · 3D</div>
               <div class="odb-title" data-en="Activity Landscape" data-ru="Ландшафт активности" data-ko="활동 지형">Activity Landscape</div>
+              <div class="odb-sub" data-en="13-week voxel surface · depth = volume" data-ru="13-недельная воксельная карта · глубина = объём" data-ko="13주 복셀 표면 · 깊이 = 볼륨">13-week voxel surface · depth = volume</div>
             </div>
-            <div class="odb-sub" data-en="5-week signal terrain · cube height = volume" data-ru="Рельеф сигналов · 5 недель · высота = объём" data-ko="5주 신호 지형 · 큐브 높이 = 볼륨">5-week signal terrain · cube height = volume</div>
+            <div class="odb-legend">
+              <span class="dl-label" data-en="VOLUME" data-ru="ОБЪЁМ" data-ko="볼륨">VOLUME</span>
+              <div class="dl-scale">
+                <div class="dl-cube dl-lo"></div>
+                <div class="dl-cube dl-mid"></div>
+                <div class="dl-cube dl-hi"></div>
+                <div class="dl-cube dl-hot"></div>
+              </div>
+              <span class="dl-label" data-en="LOW → HIGH" data-ru="МИН → МАКС" data-ko="저 → 고">LOW → HIGH</span>
+            </div>
           </div>
           <div id="heatmapContainer"></div>
-          <div class="density-legend">
-            <span class="dl-label" data-en="VOLUME" data-ru="ОБЪЁМ" data-ko="볼륨">VOLUME</span>
-            <div class="dl-scale">
-              <div class="dl-cube dl-lo"></div>
-              <div class="dl-cube dl-mid"></div>
-              <div class="dl-cube dl-hi"></div>
-              <div class="dl-cube dl-hot"></div>
-            </div>
-            <span class="dl-label" data-en="LOW → HIGH" data-ru="МИН → МАКС" data-ko="저 → 고">LOW → HIGH</span>
-          </div>
         </section>
 
         <!-- ════════ INSIGHT MODULES ════════ -->
@@ -1844,7 +1844,7 @@
     const el = document.getElementById('heatmapContainer');
     if (!el) return;
 
-    const WEEKS = 5, DAYS = 7;
+    const WEEKS = 13, DAYS = 7;
     const countMap = {};
     _lastDaily.forEach(r => { countMap[r.day] = r.count; });
 
@@ -1930,13 +1930,16 @@
       ? ['월','화','수','목','금','토','일']
       : ['MON','TUE','WED','THU','FRI','SAT','SUN'];
 
-    // Week labels under grid — W-4 … W-1 plus NOW
+    // Week labels under grid — show every other week + NOW (keeps 13-col grid readable)
     const weekLabels = Array.from({ length: WEEKS }, (_, i) => {
       const wn = WEEKS - 1 - i;
-      const lbl = wn === 0
-        ? (L.lang === 'ru' ? 'СЕЙЧАС' : L.lang === 'ko' ? '현재' : 'NOW')
+      const isNow = wn === 0;
+      const show = isNow || (wn % 2 === 0);
+      if (!show) return '<span></span>';
+      const lbl = isNow
+        ? (L.lang === 'ru' ? 'NOW' : L.lang === 'ko' ? '현재' : 'NOW')
         : `W−${wn}`;
-      return `<span${wn === 0 ? ' class="wk-now"' : ''}>${lbl}</span>`;
+      return `<span${isNow ? ' class="wk-now"' : ''}>${lbl}</span>`;
     }).join('');
 
     el.innerHTML = `

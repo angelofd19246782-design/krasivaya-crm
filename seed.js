@@ -150,37 +150,38 @@ function randomTimestamp(date) {
   return d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, '');
 }
 
-// ─── Volume distribution over 30 days ────────────────────────────────────────
+// ─── Volume distribution over the seed period ────────────────────────────────
 // Strategy:
-//   - base trend: low start (~1-3/day) growing to ~5-8/day in recent days
+//   - linear growth from start to recent days
 //   - organic noise (×0.4 to ×2.0 multiplier)
-//   - 5 spike days (8-15 requests) scattered in the period
-//   - a few quiet days (0-1 requests)
+//   - ~1 spike day per 6 days (8-15 requests)
+//   - ~1 quiet day per 12 days (0-1 requests)
 //   - last 5 days: guaranteed moderate activity
 
-function buildDayVolumes(totalTarget) {
-  const days = 30;
+function buildDayVolumes(totalTarget, days = 95) {
   const volumes = [];
 
-  // Linear growth base: 2 requests/day at day30 → 7 at day1
+  // Linear growth base: low at the oldest day → higher today
   for (let i = 0; i < days; i++) {
-    const daysFromEnd = i;           // 0 = today, 29 = 30 days ago
-    const base = 7 - daysFromEnd * (5 / (days - 1));
+    const daysFromEnd = i;           // 0 = today, days-1 = oldest
+    const base = 7 - daysFromEnd * (5 / Math.max(1, days - 1));
     const noise = 0.35 + rng() * 1.6;
     volumes.push(Math.max(0, Math.round(base * noise)));
   }
 
-  // Inject 5 spike days at random positions (not in last 2 days or first 5)
+  // Inject spike days proportional to total length
   const spikePositions = new Set();
-  while (spikePositions.size < 5) {
-    spikePositions.add(rand(5, 25));
+  const numSpikes = Math.max(5, Math.floor(days / 6));
+  while (spikePositions.size < numSpikes) {
+    spikePositions.add(rand(5, days - 3));
   }
   spikePositions.forEach(pos => { volumes[pos] = rand(9, 16); });
 
-  // Inject 4 quiet days (avoid last 3 days)
+  // Inject quiet days
   const quietPositions = new Set();
-  while (quietPositions.size < 4) {
-    const p = rand(5, 27);
+  const numQuiet = Math.max(4, Math.floor(days / 12));
+  while (quietPositions.size < numQuiet) {
+    const p = rand(5, days - 3);
     if (!spikePositions.has(p)) quietPositions.add(p);
   }
   quietPositions.forEach(pos => { volumes[pos] = rand(0, 1); });
@@ -253,8 +254,9 @@ const adminRow = db.prepare(`SELECT id FROM users WHERE role = 'admin' LIMIT 1`)
 const empRows  = db.prepare(`SELECT id FROM users WHERE role = 'employee'`).all();
 const allUsers = [adminRow, ...empRows].filter(Boolean).map(r => r.id);
 
-const TARGET_TOTAL = 200;
-const volumes = buildDayVolumes(TARGET_TOTAL);
+const TARGET_TOTAL = 540;
+const SEED_DAYS    = 95;
+const volumes = buildDayVolumes(TARGET_TOTAL, SEED_DAYS);
 const actualTotal = volumes.reduce((a, b) => a + b, 0);
 
 const ins = db.prepare(`

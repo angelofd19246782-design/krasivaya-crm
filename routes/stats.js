@@ -31,7 +31,7 @@ router.get('/stats', requireLogin, (req, res) => {
       COUNT(*)         AS count
     FROM applications
     WHERE deleted_at IS NULL
-      AND created_at >= DATE('now', '-30 days')
+      AND created_at >= DATE('now', '-100 days')
     GROUP BY day
     ORDER BY day ASC
   `).all();
@@ -44,7 +44,7 @@ router.get('/stats', requireLogin, (req, res) => {
       COUNT(*)         AS count
     FROM applications
     WHERE deleted_at IS NULL
-      AND created_at >= DATE('now', '-30 days')
+      AND created_at >= DATE('now', '-100 days')
     GROUP BY day, status
     ORDER BY day, status ASC
   `).all();
