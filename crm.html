@@ -1856,9 +1856,6 @@
     startDate.setDate(today.getDate() - daysSinceMonday - (WEEKS - 1) * 7);
 
     const maxCount = Math.max(...Object.values(countMap), 1);
-    // Depth range matches --d-max in CSS (18px) for clean geometry
-    const MAX_DEPTH = 17;
-    const MIN_DEPTH = 4;
 
     // 4 color tiers + today highlight — glow softened, geometry carries the effect
     function cubeColors(intensity, isToday) {
@@ -1901,7 +1898,6 @@
         const future = ds > todayStr;
         const isToday = ds === todayStr;
         const intensity = future ? 0 : (count / maxCount);
-        const depth = future ? 0 : Math.round(MIN_DEPTH + Math.pow(intensity, 0.65) * (MAX_DEPTH - MIN_DEPTH));
         const locale = L.lang === 'ru' ? 'ru-RU' : L.lang === 'ko' ? 'ko-KR' : 'en-US';
         const label = cell.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
         const c = cubeColors(intensity, isToday);
@@ -1920,7 +1916,7 @@
           classes += ' empty';
           cubesHtml.push(
             `<div class="${classes}" style="--delay:${delay}" title="${esc(label)}: 0">` +
-              `<div class="dcube-face"></div>` +
+              `<div class="dcube-body"></div>` +
             `</div>`
           );
           continue;
@@ -1930,7 +1926,6 @@
         else if (intensity >= 0.30) classes += ' lit';
 
         const style =
-          `--depth:${depth}px;` +
           `--top:${c.top};--topD:${c.topD};--mid:${c.mid};--midD:${c.midD};` +
           `--glow:${c.glow};--glow-size:${c.glowSize};` +
           `--delay:${delay};` +
@@ -1939,9 +1934,7 @@
 
         cubesHtml.push(
           `<div class="${classes}" style="${style}" title="${esc(label)}: ${count}">` +
-            `<div class="dcube-side"></div>` +
-            `<div class="dcube-top"></div>` +
-            `<div class="dcube-face"></div>` +
+            `<div class="dcube-body"></div>` +
           `</div>`
         );
       }
