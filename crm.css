@@ -128,69 +128,39 @@ body::before {
   flex-shrink: 0;
 }
 
-/* ─── PULSAR brand mark — orbital rings around glowing core ─── */
+/* ─── PULSAR brand mark — clean pulse-line silhouette ─── */
 .logo-mark {
   width: 40px;
   height: 40px;
-  border-radius: 11px;
+  border-radius: 10px;
   position: relative;
   flex-shrink: 0;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.22) 0%, transparent 60%),
-    linear-gradient(135deg, rgba(14, 16, 30, 0.95) 0%, rgba(22, 25, 42, 0.95) 100%);
+  background: linear-gradient(135deg, #181b2c 0%, #0e1120 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(129, 140, 248, 0.32);
+  border: 1px solid rgba(129, 140, 248, 0.22);
   box-shadow:
-    0 6px 20px rgba(99, 102, 241, 0.42),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  overflow: hidden;
+    0 4px 14px rgba(99, 102, 241, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
-.logo-mark::before {
-  /* outer aura */
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 11px;
-  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.18) 0%, transparent 65%);
-  pointer-events: none;
+.logo-svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+  overflow: visible;
 }
-.lm-core {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #c7d2fe 0%, #a855f7 100%);
-  box-shadow:
-    0 0 14px rgba(168, 85, 247, 0.95),
-    0 0 6px rgba(255, 255, 255, 0.7),
-    inset 0 0 2px rgba(255, 255, 255, 0.8);
-  z-index: 3;
-  animation: lm-core-pulse 2.6s ease-in-out infinite;
+.logo-pulse {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.45));
+  animation: logoPulse 3.6s ease-in-out infinite;
 }
-@keyframes lm-core-pulse {
-  0%, 100% { box-shadow: 0 0 14px rgba(168, 85, 247, 0.95), 0 0 6px rgba(255, 255, 255, 0.7), inset 0 0 2px rgba(255, 255, 255, 0.8); }
-  50%      { box-shadow: 0 0 20px rgba(168, 85, 247, 1), 0 0 10px rgba(199, 210, 254, 0.9), inset 0 0 3px rgba(255, 255, 255, 1); }
-}
-.lm-ring {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.lm-ring-1 { width: 14px; height: 14px; border: 1px solid rgba(199, 210, 254, 0.6); box-shadow: 0 0 8px rgba(129, 140, 248, 0.45) inset, 0 0 6px rgba(129, 140, 248, 0.3); }
-.lm-ring-2 { width: 22px; height: 22px; border: 1px solid rgba(129, 140, 248, 0.32); }
-.lm-ring-3 {
-  width: 30px;
-  height: 30px;
-  border: 1px dashed rgba(168, 85, 247, 0.45);
-  animation: lm-ring-spin 9s linear infinite;
-}
-@keyframes lm-ring-spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+@keyframes logoPulse {
+  0%, 100% { filter: drop-shadow(0 0 2.5px rgba(129, 140, 248, 0.40)); }
+  50%      { filter: drop-shadow(0 0 5px   rgba(168, 85, 247, 0.65)); }
 }
 
 .logo-text {
@@ -1395,13 +1365,87 @@ tbody td {
   transform: translateY(-1px);
 }
 
-/* Row checkbox */
-.row-check {
-  width: 15px; height: 15px;
-  accent-color: var(--indigo);
-  cursor: pointer; flex-shrink: 0; display: block;
-  background: var(--raised);
+/* ─── Custom dark checkbox — replaces all default browser checkboxes ─── */
+.row-check,
+input[type="checkbox"].row-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  transition:
+    background 0.18s var(--ease),
+    border-color 0.18s var(--ease),
+    box-shadow 0.18s var(--ease);
 }
+
+.row-check:hover {
+  border-color: rgba(129, 140, 248, 0.55);
+  background: rgba(99, 102, 241, 0.10);
+}
+
+.row-check:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22);
+  border-color: rgba(129, 140, 248, 0.6);
+}
+
+.row-check:checked {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgba(129, 140, 248, 0.32),
+    0 0 10px rgba(129, 140, 248, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Custom checkmark — drawn with rotated border corner */
+.row-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 4.5px;
+  top: 1px;
+  width: 4px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  animation: checkIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes checkIn {
+  0%   { transform: rotate(45deg) scale(0); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: rotate(45deg) scale(1); opacity: 1; }
+}
+
+/* Indeterminate state — small horizontal dash */
+.row-check:indeterminate {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.55), rgba(139, 92, 246, 0.55));
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgba(129, 140, 248, 0.28),
+    0 0 8px rgba(129, 140, 248, 0.35);
+}
+.row-check:indeterminate::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  height: 2px;
+  background: #fff;
+  transform: translateY(-50%);
+  border-radius: 1.5px;
+}
+
 th.th-check { width: 44px; padding: 12px 4px 12px 18px !important; }
 td.td-check { padding: 14px 4px 14px 18px !important; vertical-align: middle; }
 tbody tr.row-selected { background: rgba(99, 102, 241, 0.10) !important; }
@@ -2506,10 +2550,7 @@ input:focus-visible, textarea:focus-visible { outline: none; }
 }
 .sb-logo > div:last-child { display: none; }
 .sb-logo .logo-mark { width: 42px; height: 42px; }
-.sb-logo .lm-ring-3 { width: 32px; height: 32px; }
-.sb-logo .lm-ring-2 { width: 24px; height: 24px; }
-.sb-logo .lm-ring-1 { width: 15px; height: 15px; }
-.sb-logo .lm-core { width: 8px; height: 8px; }
+.sb-logo .logo-svg  { width: 28px; height: 28px; }
 
 .sb-nav { padding: 14px 0; gap: 4px; }
 .nav-section { display: none; }
