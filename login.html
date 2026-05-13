@@ -259,6 +259,51 @@
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
     }
 
+    /* Kill browser autofill yellow flash, keep dark theme */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-text-fill-color: var(--t1) !important;
+      -webkit-box-shadow: 0 0 0 100px rgba(255, 255, 255, 0.04) inset !important;
+      caret-color: var(--t1);
+      transition: background-color 9999s ease-in-out 0s, color 9999s ease-in-out 0s;
+    }
+
+    /* Password show/hide toggle */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 42px; width: 100%; }
+    .pw-toggle {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--t3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.16s var(--ease), color 0.16s var(--ease);
+      padding: 0;
+      z-index: 2;
+    }
+    .pw-toggle:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--t1);
+    }
+    .pw-toggle:focus-visible {
+      outline: none;
+      background: rgba(99, 102, 241, 0.14);
+      color: var(--indigo-2);
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.45);
+    }
+    .pw-toggle svg { width: 16px; height: 16px; display: block; }
+
     .error-msg {
       display: none;
       background: rgba(244, 63, 94, 0.08);
@@ -407,7 +452,10 @@
       </div>
       <div class="field">
         <label for="password">Access key</label>
-        <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+        <div class="pw-wrap">
+          <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+        </div>
       </div>
       <button type="submit" class="btn" id="submitBtn">
         <span class="btn-text">Authenticate<span class="btn-arrow">→</span></span>
@@ -430,6 +478,23 @@
 </div>
 
 <script>
+// Password show/hide toggle
+(function () {
+  const EYE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const EYE_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  document.querySelectorAll('.pw-toggle').forEach(btn => {
+    const input = btn.parentElement.querySelector('input');
+    if (!input) return;
+    btn.innerHTML = EYE_SVG;
+    btn.addEventListener('click', () => {
+      const hidden = input.type === 'password';
+      input.type = hidden ? 'text' : 'password';
+      btn.innerHTML = hidden ? EYE_OFF_SVG : EYE_SVG;
+      btn.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+    });
+  });
+})();
+
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 

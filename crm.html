@@ -630,7 +630,10 @@
               </div>
               <div>
                 <label class="form-label" data-en="Password" data-ru="Пароль" data-ko="비밀번호">Password</label>
-                <input class="form-input" name="password" type="password" required placeholder="Min. 6 characters">
+                <div class="pw-wrap">
+                  <input class="form-input" name="password" type="password" required placeholder="Min. 6 characters">
+                  <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+                </div>
               </div>
               <div>
                 <label class="form-label" data-en="Role" data-ru="Роль" data-ko="권한">Role</label>
@@ -681,15 +684,24 @@
             <form id="changePasswordForm">
               <div class="form-row">
                 <label class="form-label" data-en="Current Password" data-ru="Текущий пароль" data-ko="현재 비밀번호">Current Password</label>
-                <input class="form-input" name="current_password" type="password" autocomplete="current-password">
+                <div class="pw-wrap">
+                  <input class="form-input" name="current_password" type="password" autocomplete="current-password">
+                  <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+                </div>
               </div>
               <div class="form-row">
                 <label class="form-label" data-en="New Password" data-ru="Новый пароль" data-ko="새 비밀번호">New Password</label>
-                <input class="form-input" name="new_password" type="password" autocomplete="new-password" placeholder="Min. 6 characters">
+                <div class="pw-wrap">
+                  <input class="form-input" name="new_password" type="password" autocomplete="new-password" placeholder="Min. 6 characters">
+                  <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+                </div>
               </div>
               <div class="form-row">
                 <label class="form-label" data-en="Confirm New Password" data-ru="Подтвердите пароль" data-ko="새 비밀번호 확인">Confirm New Password</label>
-                <input class="form-input" name="confirm_password" type="password" autocomplete="new-password">
+                <div class="pw-wrap">
+                  <input class="form-input" name="confirm_password" type="password" autocomplete="new-password">
+                  <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+                </div>
               </div>
               <div class="add-user-err" id="pwError"></div>
               <button type="submit" class="btn-submit" style="width:auto;padding:0 22px;font-size:13px;margin-top:4px">
@@ -803,7 +815,10 @@
       </div>
       <div class="form-row">
         <label class="form-label" data-en="New Password (leave blank to keep current)" data-ru="Новый пароль (оставьте пустым чтобы не менять)" data-ko="새 비밀번호 (변경하지 않으려면 비워두세요)">New Password (leave blank to keep current)</label>
-        <input class="form-input" id="editUserPassword" type="password" autocomplete="new-password" placeholder="Min. 6 characters">
+        <div class="pw-wrap">
+          <input class="form-input" id="editUserPassword" type="password" autocomplete="new-password" placeholder="Min. 6 characters">
+          <button type="button" class="pw-toggle" aria-label="Show password" tabindex="-1"></button>
+        </div>
       </div>
       <div class="form-footer">
         <button type="button" class="btn-cancel" id="cancelEditUser" data-en="Cancel" data-ru="Отмена" data-ko="취소">Cancel</button>
@@ -3480,6 +3495,27 @@
       if (gs) { gs.focus(); gs.select(); }
     }
   });
+
+  /* ── Password show/hide toggles ── */
+  const EYE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const EYE_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+  function initPwToggles(root) {
+    (root || document).querySelectorAll('.pw-toggle').forEach(btn => {
+      if (btn._pwInit) return;
+      btn._pwInit = true;
+      const input = btn.parentElement.querySelector('input');
+      if (!input) return;
+      btn.innerHTML = EYE_SVG;
+      btn.addEventListener('click', () => {
+        const hidden = input.type === 'password';
+        input.type = hidden ? 'text' : 'password';
+        btn.innerHTML = hidden ? EYE_OFF_SVG : EYE_SVG;
+        btn.setAttribute('aria-label', hidden ? 'Hide password' : 'Show password');
+      });
+    });
+  }
+  initPwToggles();
 
   /* ── Initial load ── */
   navigateTo('dashboard');
